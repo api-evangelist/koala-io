@@ -1,0 +1,157 @@
+aid: koala-io
+url: https://raw.githubusercontent.com/api-evangelist/koala-io/refs/heads/main/apis.yml
+name: Koala
+kind: company
+description: Koala is a B2B buyer-intent and go-to-market platform that de-anonymizes
+  website and product traffic, identifies the visitors and companies behind it,
+  enriches them with firmographic and contact data (via Clearbit Reveal/Enrich and
+  ZoomInfo), and scores first-party intent so sales teams can act on the accounts
+  showing the strongest signals. Its developer surface is a client-side JavaScript
+  pixel plus an HTTP collection API for server-side identify, event, and account
+  ingestion, with a separate secret-key admin API for GDPR deletion.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Buyer Intent
+- Visitor Identification
+- De-anonymization
+- Enrichment
+- Go-to-Market
+- Sales Intelligence
+- B2B
+created: '2026-07-01'
+modified: '2026-07-01'
+specificationVersion: '0.19'
+apis:
+- aid: koala-io:koala-io-collection-api
+  name: Koala Collection (Batch) API
+  tags:
+  - Ingestion
+  - Identify
+  - Events
+  - Batch
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://getkoala.com/docs/developer-guides/server-side
+  baseURL: https://api2.getkoala.com/web/projects/{public_api_key}
+  properties:
+  - url: https://getkoala.com/docs/developer-guides/server-side
+    type: Documentation
+  - url: https://getkoala.com/docs/developer-guides/sending-identify
+    type: Documentation
+  - url: openapi/koala-io-openapi.yml
+    type: OpenAPI
+  - url: collections/koala-io.postman_collection.json
+    type: PostmanCollection
+  - url: collections/koala-io.opencollection.json
+    type: OpenCollection
+  description: Server-side ingestion endpoint. POST visitor identifies, custom
+    events, and traits to /batch keyed by your workspace public API key. Each
+    request must carry a top-level profile_id or email, is capped at 30 of each
+    payload type, and must send a User-Agent header. Authenticated by public
+    (publishable) project key embedded in the path, not a secret bearer token.
+- aid: koala-io:koala-io-accounts-api
+  name: Koala Accounts API
+  tags:
+  - Accounts
+  - Company Traits
+  - Firmographics
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://getkoala.com/docs/developer-guides/server-side
+  baseURL: https://api2.getkoala.com/web/projects/{public_api_key}
+  properties:
+  - url: https://getkoala.com/docs/developer-guides/server-side
+    type: Documentation
+  - url: openapi/koala-io-openapi.yml
+    type: OpenAPI
+  - url: collections/koala-io.postman_collection.json
+    type: PostmanCollection
+  - url: collections/koala-io.opencollection.json
+    type: OpenCollection
+  description: Account-level ingestion at /accounts/batch. Send firmographic
+    traits and account events tied to a company domain (or account_id), with an
+    optional group_id to disambiguate multiple tenants/workspaces mapping to the
+    same domain. Koala auto-creates the account if the domain is new.
+- aid: koala-io:koala-io-sdk-bootstrap-api
+  name: Koala SDK Bootstrap API
+  tags:
+  - Pixel
+  - SDK
+  - Bootstrap
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://getkoala.com/docs/sdk/installation
+  baseURL: https://api2.getkoala.com/web/projects/{public_api_key}
+  properties:
+  - url: https://getkoala.com/docs/sdk/installation
+    type: Documentation
+  - url: https://getkoala.com/docs/get-started/quick-start
+    type: Documentation
+  - url: openapi/koala-io-openapi.yml
+    type: OpenAPI
+  description: GET on the project root returns the JSON bootstrap configuration
+    the browser pixel needs to initialize. Used to verify a public key or a
+    custom reverse-proxy install is wired correctly.
+- aid: koala-io:koala-io-web-pixel-sdk
+  name: Koala Web Pixel (JavaScript SDK)
+  tags:
+  - Pixel
+  - JavaScript
+  - Autotracking
+  - Client Side
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://getkoala.com/docs/sdk/installation
+  baseURL: https://cdn.getkoala.com/v1/{public_api_key}
+  properties:
+  - url: https://getkoala.com/docs/sdk/installation
+    type: Documentation
+  - url: https://getkoala.com/docs/sdk/identify
+    type: Documentation
+  - url: https://getkoala.com/docs/sdk/track
+    type: Documentation
+  - url: https://getkoala.com/docs/sdk/autotracking
+    type: Documentation
+  description: The client-side pixel loaded from cdn.getkoala.com/v1/{key}/sdk.js.
+    Exposes ko.identify(), ko.track(), ko.qualify(), ko.reset() and autotracks
+    pageviews, form fills, and session time. This is a browser SDK, not a REST
+    resource, and it de-anonymizes traffic client-side into the same collection
+    pipeline as the Batch API.
+- aid: koala-io:koala-io-deletion-api
+  name: Koala Deletion (GDPR) API
+  tags:
+  - GDPR
+  - Deletion
+  - Privacy
+  - Compliance
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://getkoala.com/docs/developer-guides/gdpr-endpoint
+  baseURL: https://app.getkoala.com/api/v1
+  properties:
+  - url: https://getkoala.com/docs/developer-guides/gdpr-endpoint
+    type: Documentation
+  - url: openapi/koala-io-openapi.yml
+    type: OpenAPI
+  - url: collections/koala-io.postman_collection.json
+    type: PostmanCollection
+  - url: collections/koala-io.opencollection.json
+    type: OpenCollection
+  description: Secret-key admin API for GDPR right-to-erasure. POST a list of up
+    to 50 emails to /deletion-requests to queue a deletion and receive a
+    deletion_request_id; GET /deletion-requests/{id} to poll status and retrieve
+    the deletion receipt. Authenticated with an Authorization Bearer secret
+    (sk_...) API key, unlike the public-key collection endpoints.
+common:
+- type: GitHubOrganization
+  url: https://github.com/getkoala
+- type: LinkedIn
+  url: https://www.linkedin.com/company/getkoala
+- type: Website
+  url: https://getkoala.com
+- type: Documentation
+  url: https://getkoala.com/docs
+- type: Plans
+  url: plans/koala-io-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/koala-io-rate-limits.yml
+- type: FinOps
+  url: finops/koala-io-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

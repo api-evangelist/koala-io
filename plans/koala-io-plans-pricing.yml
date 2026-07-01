@@ -1,0 +1,117 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Koala
+providerId: koala-io
+created: '2026-07-01'
+modified: '2026-07-01'
+reconciled: false
+tags:
+- Buyer Intent
+- Visitor Identification
+- Enrichment
+- Go-to-Market
+- Plans
+description: >-
+  Koala is sold as a seat- and usage-based SaaS product, not as a metered
+  pay-as-you-go API. Access to the pixel and the collection/deletion APIs comes
+  with the workspace subscription; there is no separate per-call API price.
+  Koala offers a free self-serve tier and paid tiers (commonly described as Pro
+  and Enterprise) that gate identified-visitor volume, enrichment credits,
+  seats, automations, and integrations. Public dollar amounts are not
+  consistently published on the pricing page; third-party sources put entry paid
+  pricing in the low hundreds of dollars per month. Treat the amounts below as
+  approximate and unreconciled.
+notes: >-
+  Koala does not publish a fixed price sheet for all tiers; sign-up is
+  self-serve and larger plans are quoted by sales. Enrichment (Clearbit Reveal
+  10k/mo + Enrich 250/mo referenced in docs, plus ZoomInfo) is provisioned as
+  credits rather than billed per API request by Koala. Verify current tiers,
+  limits, and prices on the pricing page during reconciliation.
+sources:
+- https://getkoala.com/pricing
+- https://getkoala.com/docs/admin-guides/credits-faq
+- https://getkoala.com/docs/automations/credits
+plans:
+- id: koala-free
+  name: Free
+  type: free
+  description: >-
+    Self-serve free tier to install the pixel, de-anonymize traffic, and start
+    seeing intent signals with capped identified-visitor volume and limited
+    seats/credits.
+  entries:
+  - label: Identified Visitors
+    name: identified_visitors
+    type: quota
+    metric: visitors
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included (capped)
+    userMultiplied: false
+  - label: Enrichment Credits
+    name: enrichment_credits
+    type: quota
+    metric: credits
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included (limited)
+    userMultiplied: false
+  elements:
+  - name: Website Pixel
+  - name: Visitor & Company Identification
+  - name: Intent Signals
+  - name: Slack Alerts
+- id: koala-pro
+  name: Pro
+  type: subscription
+  description: >-
+    Paid tier that raises identified-visitor volume and enrichment credits and
+    unlocks automations, audiences, additional integrations, and more seats.
+    Entry paid pricing is reported in the low hundreds of dollars per month.
+  entries:
+  - label: Monthly Subscription
+    name: pro_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: from ~$199/month (see pricing page)
+    userMultiplied: false
+  elements:
+  - name: Higher Identified Visitor Limits
+  - name: More Enrichment Credits
+  - name: Auto-Outbound & Automations
+  - name: Audiences
+  - name: CRM & Reverse ETL Integrations
+- id: koala-enterprise
+  name: Enterprise
+  type: enterprise
+  description: >-
+    Custom volume, SSO/SAML, advanced intent signals, security review,
+    dedicated support, and negotiated terms. Contact Koala sales.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: SAML SSO
+  - name: Advanced Intent Signals
+  - name: Custom Volume & Credits
+  - name: Priority Support
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

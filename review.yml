@@ -1,0 +1,84 @@
+aid: koala-io
+name: Koala
+review:
+  question: Does Koala expose a documented public WebSocket API?
+  answer: false
+  date: '2026-07-01'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was created. Koala publishes no documented public
+    event-driven, streaming, SSE, or WebSocket API. The only real-time surface
+    is the browser pixel's internal transport, which is not a documented,
+    consumable API contract.
+findings:
+  summary: |
+    Koala does not publish a documented public WebSocket (or other
+    bidirectional streaming) API. Its documented developer surface is HTTP
+    only: a public-key Collection API on https://api2.getkoala.com
+    (/web/projects/{public_key}/batch and /accounts/batch for visitor and
+    account ingestion, plus a GET on the project root for SDK bootstrap), and a
+    secret-key Deletion (GDPR) API on https://app.getkoala.com/api/v1. The
+    installation docs instruct users to allowlist `wss://*.getkoala.com` in a
+    strict Content-Security-Policy, which indicates the client-side pixel opens
+    a WebSocket to Koala for its own real-time operation. That is an internal
+    implementation detail of the SDK, not a documented, versioned WebSocket API
+    that a developer can build against, so it is not modeled as an API surface.
+    De-anonymization, person/company enrichment, and intent scoring are
+    performed internally (Clearbit Reveal/Enrich, ZoomInfo) and delivered
+    through the app, webhooks, and warehouse/reverse-ETL integrations rather
+    than through a public query API.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://api2.getkoala.com
+      documented: true
+    - protocol: REST
+      scheme: https
+      baseURL: https://app.getkoala.com/api/v1
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: >-
+        The pixel uses wss://*.getkoala.com internally (referenced only via the
+        CSP allowlist guidance). No public WebSocket API contract, channels, or
+        message schemas are documented.
+  endpointsConfirmedRest:
+    - GET  https://api2.getkoala.com/web/projects/{public_key}
+    - POST https://api2.getkoala.com/web/projects/{public_key}/batch
+    - POST https://api2.getkoala.com/web/projects/{public_key}/accounts/batch
+    - POST https://app.getkoala.com/api/v1/deletion-requests
+    - GET  https://app.getkoala.com/api/v1/deletion-requests/{deletion_request_id}
+  authModels:
+    - name: Public project key in path
+      appliesTo:
+        - https://api2.getkoala.com/web/projects/{public_key}/*
+      note: Publishable, non-secret key; also embedded in the browser pixel URL.
+    - name: Secret bearer key
+      appliesTo:
+        - https://app.getkoala.com/api/v1/*
+      note: 'Authorization: Bearer sk_... created in Settings -> API Keys.'
+sources:
+  - url: https://getkoala.com/docs/developer-guides/server-side
+    type: Documentation
+    note: Defines the /batch and /accounts/batch collection endpoints and public-key auth.
+  - url: https://getkoala.com/docs/developer-guides/gdpr-endpoint
+    type: Documentation
+    note: Defines the secret-key /api/v1/deletion-requests endpoints.
+  - url: https://getkoala.com/docs/sdk/installation
+    type: Documentation
+    note: References wss://*.getkoala.com only as a CSP allowlist entry for the pixel; no public WebSocket API documented.
+  - url: https://getkoala.com/docs/developer-guides/custom-proxy-setup
+    type: Documentation
+    note: Confirms API origin proxy.getkoala.com and CDN cdn.getkoala.com behind the api2 host.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No public WebSocket or event-driven API surface exists to model. The pixel's
+    internal wss usage is undocumented as a contract, so no AsyncAPI document was
+    authored. The apis.yml captures the two documented HTTP surfaces (public-key
+    Collection/Accounts/Bootstrap and secret-key Deletion) plus the client-side
+    pixel SDK, and is explicit that enrichment/intent data is delivered via app
+    and integrations rather than a public query API.

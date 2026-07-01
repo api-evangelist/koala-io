@@ -1,0 +1,216 @@
+{
+  "info": {
+    "name": "Koala API",
+    "description": "Koala buyer-intent / GTM platform. Collection & Accounts ingestion use the public project key in the URL path (no bearer token); the Deletion (GDPR) API uses a secret bearer key.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "publicApiKey",
+      "value": "my-public-api-key"
+    },
+    {
+      "key": "secretApiKey",
+      "value": "sk_replace_me"
+    },
+    {
+      "key": "deletionRequestId",
+      "value": "3772f22a-4f8d-4d14-8fa2-987a38c3456e"
+    }
+  ],
+  "item": [
+    {
+      "name": "Collection",
+      "item": [
+        {
+          "name": "Get SDK bootstrap configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api2.getkoala.com/web/projects/{{publicApiKey}}",
+              "protocol": "https",
+              "host": ["api2", "getkoala", "com"],
+              "path": ["web", "projects", "{{publicApiKey}}"]
+            },
+            "description": "Returns the JSON bootstrap config the browser pixel uses to initialize. Useful to verify a public key or reverse-proxy install."
+          },
+          "response": []
+        },
+        {
+          "name": "Ingest visitor identifies, events, and traits",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "your-company-name/1.0.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\",\n  \"events\": [\n    {\n      \"message_id\": \"any-idempotent-id\",\n      \"type\": \"track\",\n      \"event\": \"Created Account\",\n      \"properties\": {},\n      \"sent_at\": \"2022-11-09T23:57:14.776Z\"\n    }\n  ],\n  \"identifies\": [\n    {\n      \"type\": \"identify\",\n      \"sent_at\": \"2023-11-30T02:51:36.840Z\",\n      \"traits\": {\n        \"email\": \"person@example.com\",\n        \"billing_plan\": \"pro\",\n        \"vip\": true\n      }\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api2.getkoala.com/web/projects/{{publicApiKey}}/batch",
+              "protocol": "https",
+              "host": ["api2", "getkoala", "com"],
+              "path": ["web", "projects", "{{publicApiKey}}", "batch"]
+            },
+            "description": "POST visitor identifies, custom events, and traits. Requires a top-level profile_id or email plus a User-Agent header. Max 30 of each payload type; all must be for the same person. Public key in path (no bearer token)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Ingest account traits",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "your-company-name/1.0.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"domain\": \"getkoala.com\",\n  \"identifies\": [\n    {\n      \"type\": \"identify\",\n      \"traits\": {\n        \"billing_plan\": \"pro\",\n        \"vip\": true,\n        \"headcount\": 100\n      }\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api2.getkoala.com/web/projects/{{publicApiKey}}/accounts/batch",
+              "protocol": "https",
+              "host": ["api2", "getkoala", "com"],
+              "path": ["web", "projects", "{{publicApiKey}}", "accounts", "batch"]
+            },
+            "description": "POST firmographic account traits tied to a company domain (or account_id). Optional group_id disambiguates multiple tenants on one domain."
+          },
+          "response": []
+        },
+        {
+          "name": "Ingest account events",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "your-company-name/1.0.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"domain\": \"getkoala.com\",\n  \"events\": [\n    {\n      \"message_id\": \"any-idempotent-id\",\n      \"type\": \"track\",\n      \"event\": \"Workspace Created\",\n      \"properties\": {\n        \"workspace_id\": \"1234567890\",\n        \"workspace_name\": \"Acme, Inc.\"\n      },\n      \"sent_at\": \"2022-11-09T23:57:14.776Z\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api2.getkoala.com/web/projects/{{publicApiKey}}/accounts/batch",
+              "protocol": "https",
+              "host": ["api2", "getkoala", "com"],
+              "path": ["web", "projects", "{{publicApiKey}}", "accounts", "batch"]
+            },
+            "description": "POST account-level events tied to a company domain (or account_id)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Deletion (GDPR)",
+      "item": [
+        {
+          "name": "Request GDPR deletion",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{secretApiKey}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emails\": [\n    \"emails1@email.com\",\n    \"emails2@gmail.com\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://app.getkoala.com/api/v1/deletion-requests",
+              "protocol": "https",
+              "host": ["app", "getkoala", "com"],
+              "path": ["api", "v1", "deletion-requests"]
+            },
+            "description": "POST up to 50 emails to queue a GDPR deletion. Returns a deletion_request_id. Secret key via Authorization: Bearer sk_..."
+          },
+          "response": []
+        },
+        {
+          "name": "Check GDPR deletion status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{secretApiKey}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://app.getkoala.com/api/v1/deletion-requests/{{deletionRequestId}}",
+              "protocol": "https",
+              "host": ["app", "getkoala", "com"],
+              "path": ["api", "v1", "deletion-requests", "{{deletionRequestId}}"]
+            },
+            "description": "GET the status and deletion receipt for a deletion request."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

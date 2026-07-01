@@ -1,0 +1,81 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Koala
+providerId: koala-io
+created: '2026-07-01'
+modified: '2026-07-01'
+reconciled: false
+tags:
+- Buyer Intent
+- Ingestion
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  Koala does not publish numeric request-per-second rate limits for its
+  collection endpoints. The documented constraints are payload-shape limits on
+  the /batch and /accounts/batch endpoints rather than throttling thresholds:
+  each request may carry at most 30 events, 30 identifies, and 30 page_views,
+  every event in a request must belong to the same person, and each request must
+  include a top-level profile_id/email (or domain/account_id for accounts) plus
+  a User-Agent header or it may be dropped as bot traffic. The Deletion (GDPR)
+  API caps each request at 50 emails. Business-level throttling is expressed as
+  plan quotas (identified-visitor volume and enrichment credits) rather than
+  per-minute request ceilings.
+notes: >-
+  No RPM/RPS/TPM values are documented. Confirm any hard request throttles and
+  per-plan visitor/credit quotas with Koala during reconciliation. Requests
+  missing a User-Agent are treated as bots and silently discarded.
+sources:
+- https://getkoala.com/docs/developer-guides/server-side
+- https://getkoala.com/docs/developer-guides/gdpr-endpoint
+- https://getkoala.com/docs/admin-guides/credits-faq
+responseCodes:
+  throttled: 429
+limits:
+- name: Events per request
+  scope: request
+  metric: events
+  limit: 30
+  notes: /batch and /accounts/batch accept up to 30 events per request.
+- name: Identifies per request
+  scope: request
+  metric: identifies
+  limit: 30
+  notes: Up to 30 identify objects per /batch request.
+- name: Page views per request
+  scope: request
+  metric: page_views
+  limit: 30
+  notes: Up to 30 page_view objects per /batch request.
+- name: Same-person constraint
+  scope: request
+  metric: profiles
+  limit: 1
+  notes: All events/identifies in a single /batch request must belong to one person.
+- name: Emails per deletion request
+  scope: request
+  metric: emails
+  limit: 50
+  notes: Deletion API ignores emails beyond the first 50 in a request.
+- name: Identified visitor volume
+  scope: account
+  metric: visitors
+  limit: see plan
+  notes: Gated by subscription tier rather than a per-minute request limit.
+- name: Enrichment credits
+  scope: account
+  metric: credits
+  limit: see plan
+  notes: Reveal/Enrich and ZoomInfo enrichment consume plan credits.
+policies:
+- name: User-Agent Required
+  description: Requests without a User-Agent header may be flagged as bots and dropped.
+- name: Idempotency
+  description: Send a message_id per event to dedupe replayed/retried deliveries.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on 429.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

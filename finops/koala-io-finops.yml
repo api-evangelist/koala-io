@@ -1,0 +1,88 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Koala
+providerId: koala-io
+created: '2026-07-01'
+modified: '2026-07-01'
+reconciled: false
+tags:
+- Buyer Intent
+- Enrichment
+- Go-to-Market
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of Koala spend. Koala is a subscription SaaS product rather than a
+  metered per-call API, so cost is driven by the plan tier, number of seats, the
+  volume of identified visitors, and consumption of enrichment credits (Clearbit
+  Reveal/Enrich and ZoomInfo). The pixel and the collection/deletion APIs carry
+  no separate per-request charge. Cost optimization is about matching the plan
+  to identified-visitor volume and controlling enrichment-credit burn, not about
+  per-token or per-call rate shopping.
+notes: >-
+  Koala does not expose a usage-metered billing API for its endpoints. Track
+  spend via the subscription invoice plus in-app credit usage. Verify credit
+  allotments and overage behavior with Koala during reconciliation.
+sources:
+- https://getkoala.com/pricing
+- https://getkoala.com/docs/admin-guides/credits-faq
+- https://getkoala.com/docs/automations/credits
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Koala
+serviceCategory: Analytics and Sales Intelligence
+billingModel:
+  pricingCategory: Subscription
+  billingFrequency: Monthly
+  billingCurrency: USD
+  chargeCategories:
+  - Usage
+  - Purchase
+meters:
+- name: subscription_seats
+  description: Paid seats on the workspace plan.
+  unit: seats
+  aggregation: max
+  dimensions:
+  - account
+  - plan
+- name: identified_visitors
+  description: De-anonymized/identified visitors counted toward the plan limit.
+  unit: visitors
+  aggregation: sum
+  dimensions:
+  - account
+  - plan
+- name: enrichment_credits
+  description: Credits consumed for company/person enrichment (Reveal/Enrich, ZoomInfo).
+  unit: credits
+  aggregation: sum
+  dimensions:
+  - account
+  - source
+- name: automation_credits
+  description: Credits consumed by auto-outbound and automation actions.
+  unit: credits
+  aggregation: sum
+  dimensions:
+  - account
+  - automation
+principles:
+- name: Visibility
+  description: Review the subscription invoice and in-app credit usage; watch identified-visitor volume against plan caps.
+- name: Allocation
+  description: Attribute seats, visitor volume, and enrichment credits to the teams/campaigns driving them.
+- name: Optimization
+  description: Right-size the plan to actual identified-visitor volume; scope enrichment to accounts that matter; avoid burning automation credits on low-intent traffic.
+- name: Accountability
+  description: Assign an owner for the Koala subscription and review credit burn and tier fit each renewal.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

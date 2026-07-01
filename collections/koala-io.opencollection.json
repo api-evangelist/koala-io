@@ -1,0 +1,159 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Collection",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get SDK bootstrap configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api2.getkoala.com/web/projects/{{publicApiKey}}"
+          },
+          "docs": "Returns the JSON bootstrap config the browser pixel uses to initialize. Useful to verify a public key or reverse-proxy install."
+        },
+        {
+          "info": {
+            "name": "Ingest visitor identifies, events, and traits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/{{publicApiKey}}/batch",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "your-company-name/1.0.0"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\",\n  \"events\": [\n    {\n      \"message_id\": \"any-idempotent-id\",\n      \"type\": \"track\",\n      \"event\": \"Created Account\",\n      \"properties\": {},\n      \"sent_at\": \"2022-11-09T23:57:14.776Z\"\n    }\n  ],\n  \"identifies\": [\n    {\n      \"type\": \"identify\",\n      \"sent_at\": \"2023-11-30T02:51:36.840Z\",\n      \"traits\": {\n        \"email\": \"person@example.com\",\n        \"billing_plan\": \"pro\",\n        \"vip\": true\n      }\n    }\n  ]\n}"
+            }
+          },
+          "docs": "POST visitor identifies, custom events, and traits. Requires a top-level profile_id or email and a User-Agent header. Max 30 of each payload type; all must be for the same person. Public key in path."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Accounts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Ingest account traits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/{{publicApiKey}}/accounts/batch",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "your-company-name/1.0.0"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{\n  \"domain\": \"getkoala.com\",\n  \"identifies\": [\n    {\n      \"type\": \"identify\",\n      \"traits\": {\n        \"billing_plan\": \"pro\",\n        \"vip\": true,\n        \"headcount\": 100\n      }\n    }\n  ]\n}"
+            }
+          },
+          "docs": "POST firmographic account traits tied to a company domain (or account_id). Optional group_id disambiguates multiple tenants on one domain."
+        },
+        {
+          "info": {
+            "name": "Ingest account events",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/{{publicApiKey}}/accounts/batch",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "your-company-name/1.0.0"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{\n  \"domain\": \"getkoala.com\",\n  \"events\": [\n    {\n      \"message_id\": \"any-idempotent-id\",\n      \"type\": \"track\",\n      \"event\": \"Workspace Created\",\n      \"properties\": {\n        \"workspace_id\": \"1234567890\",\n        \"workspace_name\": \"Acme, Inc.\"\n      },\n      \"sent_at\": \"2022-11-09T23:57:14.776Z\"\n    }\n  ]\n}"
+            }
+          },
+          "docs": "POST account-level events tied to a company domain (or account_id)."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Deletion (GDPR)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Request GDPR deletion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.getkoala.com/api/v1/deletion-requests",
+            "auth": {
+              "type": "bearer",
+              "token": "{{secretApiKey}}"
+            },
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{\n  \"emails\": [\n    \"emails1@email.com\",\n    \"emails2@gmail.com\"\n  ]\n}"
+            }
+          },
+          "docs": "POST up to 50 emails to queue a GDPR deletion. Returns a deletion_request_id. Secret key via Authorization: Bearer sk_..."
+        },
+        {
+          "info": {
+            "name": "Check GDPR deletion status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.getkoala.com/api/v1/deletion-requests/{{deletionRequestId}}",
+            "auth": {
+              "type": "bearer",
+              "token": "{{secretApiKey}}"
+            }
+          },
+          "docs": "GET the status and deletion receipt for a deletion request."
+        }
+      ]
+    }
+  ]
+}
