@@ -1,0 +1,15 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/koala-io-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: SecretApiKey
+  type: http
+  scheme: bearer
+  bearerFormat: sk_
+  description: 'Secret API key created in Settings -> API Keys, sent as `Authorization: Bearer
+    sk_...`. Used only by the Deletion (GDPR) API.'
+  sources:
+  - openapi/koala-io-openapi.yml

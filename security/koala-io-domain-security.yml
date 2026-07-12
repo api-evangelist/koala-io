@@ -1,0 +1,26 @@
+generated: '2026-07-11'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: getkoala.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep 15 16:00:11 2026 GMT
+  hsts: false
+- host: app.getkoala.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Aug 30 23:43:14 2026 GMT
+  hsts: null
+- host: api2.getkoala.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Aug 30 23:43:14 2026 GMT
+  hsts: null
+domains:
+- domain: getkoala.com
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine

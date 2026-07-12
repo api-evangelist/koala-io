@@ -138,6 +138,12 @@ apis:
     the deletion receipt. Authenticated with an Authorization Bearer secret
     (sk_...) API key, unlike the public-key collection endpoints.
 common:
+- type: TrustCenter
+  url: security/koala-io-trust-center.yml
+- type: DomainSecurity
+  url: security/koala-io-domain-security.yml
+- type: Authentication
+  url: authentication/koala-io-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/getkoala
 - type: LinkedIn
