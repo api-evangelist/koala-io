@@ -138,6 +138,8 @@ apis:
     the deletion receipt. Authenticated with an Authorization Bearer secret
     (sk_...) API key, unlike the public-key collection endpoints.
 common:
+- type: AgenticAccess
+  url: agentic-access/koala-io-agentic-access.yml
 - type: TrustCenter
   url: security/koala-io-trust-center.yml
 - type: DomainSecurity
