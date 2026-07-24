@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: Koala Accounts Collection API
+  description: 'Koala''s developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:
+
+
+    1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.
+
+
+    2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.
+
+
+    Visitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.'
+  termsOfService: https://getkoala.com/legal/terms
+  contact:
+    name: Koala Support
+    email: support@getkoala.com
+    url: https://getkoala.com/docs
+  version: '1.0'
+servers:
+- url: https://api2.getkoala.com
+  description: Collection API (public project key in path)
+- url: https://app.getkoala.com
+  description: Application / admin API (secret bearer key)
+tags:
+- name: Collection
+  description: Server-side ingestion of visitor identifies, events, and traits.
+paths:
+  /web/projects/{publicApiKey}/batch:
+    post:
+      operationId: collectBatch
+      tags:
+      - Collection
+      summary: Ingest visitor identifies, events, and traits
+      description: Sends a batch of visitor-level data to Koala. The request body MUST include a top-level `profile_id` (from the `ko_id` cookie) or `email` so the payload can be attached to a visitor. Each of `events` and `identifies` is limited to 30 entries per request, and every event in a single request must belong to the same person. A `User-Agent` header is required or the request may be dropped as bot traffic. Authenticated by the public project key in the path.
+      parameters:
+      - $ref: '#/components/parameters/PublicApiKey'
+      - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+            examples:
+              identifyOnly:
+                summary: Minimal identify
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: person@example.com
+              customEvent:
+                summary: Custom event
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: netto@getkoala.com
+                  events:
+                  - message_id: 4b1e-idempotency-key
+                    type: track
+                    event: Created Account
+                    properties: {}
+                    sent_at: '2022-11-09T23:57:14.776Z'
+              traits:
+                summary: Visitor traits
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: user@example.org
+                  identifies:
+                  - type: identify
+                    sent_at: '2023-11-30T02:51:36.840Z'
+                    traits:
+                      email: user@example.org
+                      billing_plan: pro
+                      vip: true
+      responses:
+        '200':
+          description: Batch accepted for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionAck'
+        '400':
+          description: Missing profile_id/email or malformed payload.
+components:
+  parameters:
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
+  schemas:
+    BatchRequest:
+      type: object
+      description: A visitor-scoped batch. At least one of profile_id or email is required at the top level.
+      properties:
+        profile_id:
+          type: string
+          format: uuid
+          description: The Koala anonymous id read from the `ko_id` cookie (UUID v4).
+        email:
+          type: string
+          format: email
+          description: Known email used to link this visitor to an identified profile.
+        events:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+        identifies:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/IdentifyCall'
+        page_views:
+          type: array
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: true
+      anyOf:
+      - required:
+        - profile_id
+      - required:
+        - email
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
+    IdentifyCall:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          default: identify
+        sent_at:
+          type: string
+          format: date-time
+        traits:
+          type: object
+          description: Arbitrary visitor or account traits (email, billing_plan, vip, headcount, group_id, etc.).
+          additionalProperties: true
+      required:
+      - traits
+    TrackEvent:
+      type: object
+      properties:
+        message_id:
+          type: string
+          description: Idempotency key used to dedupe replayed/retried events.
+        type:
+          type: string
+          enum:
+          - track
+          default: track
+        event:
+          type: string
+          description: Event name (e.g. "Created Account").
+        properties:
+          type: object
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+      required:
+      - event
+  securitySchemes:
+    SecretApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: sk_
+      description: 'Secret API key created in Settings -> API Keys, sent as `Authorization: Bearer sk_...`. Used only by the Deletion (GDPR) API.'

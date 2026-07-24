@@ -1,0 +1,140 @@
+openapi: 3.0.3
+info:
+  title: Koala Accounts Deletion API
+  description: 'Koala''s developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:
+
+
+    1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.
+
+
+    2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.
+
+
+    Visitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.'
+  termsOfService: https://getkoala.com/legal/terms
+  contact:
+    name: Koala Support
+    email: support@getkoala.com
+    url: https://getkoala.com/docs
+  version: '1.0'
+servers:
+- url: https://api2.getkoala.com
+  description: Collection API (public project key in path)
+- url: https://app.getkoala.com
+  description: Application / admin API (secret bearer key)
+tags:
+- name: Deletion
+  description: GDPR right-to-erasure requests and status.
+paths:
+  /api/v1/deletion-requests:
+    post:
+      operationId: createDeletionRequest
+      tags:
+      - Deletion
+      summary: Request GDPR deletion for a set of emails
+      description: 'Queues a right-to-erasure deletion for up to 50 email addresses (extra emails beyond the first 50 are ignored). Returns a `deletion_request_id` used to poll status. Authenticated with a secret API key via `Authorization: Bearer sk_...`.'
+      security:
+      - SecretApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletionRequest'
+            example:
+              emails:
+              - emails1@email.com
+              - emails2@gmail.com
+      responses:
+        '200':
+          description: Deletion request accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionRequestCreated'
+        '401':
+          description: Missing or invalid secret API key.
+  /api/v1/deletion-requests/{deletionRequestId}:
+    get:
+      operationId: getDeletionRequest
+      tags:
+      - Deletion
+      summary: Check GDPR deletion status
+      description: Returns the status and, once completed, the deletion receipt for a previously created deletion request. Authenticated with the same secret API key.
+      security:
+      - SecretApiKey: []
+      parameters:
+      - name: deletionRequestId
+        in: path
+        required: true
+        description: The id returned by createDeletionRequest.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Deletion request status and receipt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionRequestStatus'
+        '401':
+          description: Missing or invalid secret API key.
+        '404':
+          description: Unknown deletion request id.
+components:
+  schemas:
+    DeletionRequestCreated:
+      type: object
+      properties:
+        deletion_request_id:
+          type: string
+          format: uuid
+    DeletionRequestStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          example: completed
+        input:
+          type: array
+          items:
+            type: string
+        deleted_receipt:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            type: string
+    DeletionRequest:
+      type: object
+      required:
+      - emails
+      properties:
+        emails:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: email
+  securitySchemes:
+    SecretApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: sk_
+      description: 'Secret API key created in Settings -> API Keys, sent as `Authorization: Bearer sk_...`. Used only by the Deletion (GDPR) API.'

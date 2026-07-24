@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  title: Koala Accounts SDK API
+  description: 'Koala''s developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:
+
+
+    1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.
+
+
+    2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.
+
+
+    Visitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.'
+  termsOfService: https://getkoala.com/legal/terms
+  contact:
+    name: Koala Support
+    email: support@getkoala.com
+    url: https://getkoala.com/docs
+  version: '1.0'
+servers:
+- url: https://api2.getkoala.com
+  description: Collection API (public project key in path)
+- url: https://app.getkoala.com
+  description: Application / admin API (secret bearer key)
+tags:
+- name: SDK
+  description: Bootstrap configuration used by the client-side pixel.
+paths:
+  /web/projects/{publicApiKey}:
+    get:
+      operationId: getProjectBootstrap
+      tags:
+      - SDK
+      summary: Get SDK bootstrap configuration
+      description: Returns the JSON configuration the browser pixel needs to initialize for this workspace. Also useful to verify that a public key or a custom reverse-proxy install resolves correctly (a valid key returns a JSON response).
+      parameters:
+      - $ref: '#/components/parameters/PublicApiKey'
+      responses:
+        '200':
+          description: Bootstrap configuration returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '404':
+          description: Unknown or disabled project key.
+components:
+  parameters:
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
+  securitySchemes:
+    SecretApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: sk_
+      description: 'Secret API key created in Settings -> API Keys, sent as `Authorization: Bearer sk_...`. Used only by the Deletion (GDPR) API.'

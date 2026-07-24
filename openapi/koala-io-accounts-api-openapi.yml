@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: Koala Accounts API
+  description: 'Koala''s developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:
+
+
+    1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.
+
+
+    2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.
+
+
+    Visitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.'
+  termsOfService: https://getkoala.com/legal/terms
+  contact:
+    name: Koala Support
+    email: support@getkoala.com
+    url: https://getkoala.com/docs
+  version: '1.0'
+servers:
+- url: https://api2.getkoala.com
+  description: Collection API (public project key in path)
+- url: https://app.getkoala.com
+  description: Application / admin API (secret bearer key)
+tags:
+- name: Accounts
+  description: Account-level (company) trait and event ingestion.
+paths:
+  /web/projects/{publicApiKey}/accounts/batch:
+    post:
+      operationId: collectAccountBatch
+      tags:
+      - Accounts
+      summary: Ingest account (company) traits and events
+      description: Sends account-level firmographic traits and/or account events tied to a company `domain` (recommended) or Koala `account_id`. An optional `group_id` disambiguates multiple tenants/workspaces that map to the same domain. Koala auto-creates the account if the domain has not been seen. Authenticated by the public project key in the path.
+      parameters:
+      - $ref: '#/components/parameters/PublicApiKey'
+      - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountBatchRequest'
+            examples:
+              accountTraits:
+                summary: Account traits
+                value:
+                  domain: getkoala.com
+                  identifies:
+                  - type: identify
+                    traits:
+                      billing_plan: pro
+                      vip: true
+                      headcount: 100
+              accountEvent:
+                summary: Account event
+                value:
+                  domain: getkoala.com
+                  events:
+                  - message_id: any-idempotent-id
+                    type: track
+                    event: Workspace Created
+                    properties:
+                      workspace_id: '1234567890'
+                      workspace_name: Acme, Inc.
+                    sent_at: '2022-11-09T23:57:14.776Z'
+      responses:
+        '200':
+          description: Account batch accepted for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionAck'
+        '400':
+          description: Missing domain/account_id or malformed payload.
+components:
+  parameters:
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
+  schemas:
+    AccountBatchRequest:
+      type: object
+      description: An account-scoped batch. At least one of domain or account_id is required; domain is recommended.
+      properties:
+        domain:
+          type: string
+          description: Company domain used as the account key (e.g. getkoala.com).
+        account_id:
+          type: string
+          description: Koala account id, if you already have one.
+        group_id:
+          type: string
+          description: Optional grouping key to disambiguate multiple tenants mapping to the same domain.
+        events:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+        identifies:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/IdentifyCall'
+      anyOf:
+      - required:
+        - domain
+      - required:
+        - account_id
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
+    IdentifyCall:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          default: identify
+        sent_at:
+          type: string
+          format: date-time
+        traits:
+          type: object
+          description: Arbitrary visitor or account traits (email, billing_plan, vip, headcount, group_id, etc.).
+          additionalProperties: true
+      required:
+      - traits
+    TrackEvent:
+      type: object
+      properties:
+        message_id:
+          type: string
+          description: Idempotency key used to dedupe replayed/retried events.
+        type:
+          type: string
+          enum:
+          - track
+          default: track
+        event:
+          type: string
+          description: Event name (e.g. "Created Account").
+        properties:
+          type: object
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+      required:
+      - event
+  securitySchemes:
+    SecretApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: sk_
+      description: 'Secret API key created in Settings -> API Keys, sent as `Authorization: Bearer sk_...`. Used only by the Deletion (GDPR) API.'
