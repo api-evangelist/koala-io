@@ -1,0 +1,443 @@
+openapi: 3.0.3
+info:
+  title: Koala API
+  description: >-
+    Koala's developer-facing HTTP surface for its B2B buyer-intent and
+    go-to-market platform. It has two distinct halves with two distinct auth
+    models:
+
+
+    1. The **Collection / Batch API** on `https://api2.getkoala.com`, which
+    ingests visitor identifies, custom events, traits, and account-level data.
+    It is authenticated by the workspace **public (publishable) project key**
+    embedded directly in the URL path (`/web/projects/{public_api_key}/...`).
+    There is no bearer token; the key is not secret and the same key powers the
+    browser pixel. A `GET` on the project root returns the JSON bootstrap
+    config the client-side SDK uses to initialize.
+
+
+    2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which
+    is authenticated with a **secret API key** (`sk_...`) via an
+    `Authorization: Bearer` header and is used to request and poll
+    right-to-erasure deletions.
+
+
+    Visitor de-anonymization (IP-to-company), person enrichment, and company
+    firmographic enrichment are performed by Koala internally (powered by
+    Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports,
+    webhooks, and reverse ETL integrations. Koala does not document a public
+    REST endpoint to query enriched company/visitor/intent records directly;
+    that data is consumed through the app, warehouse syncs (BigQuery, Snowflake,
+    Hightouch, Census), and outbound automations.
+  termsOfService: https://getkoala.com/legal/terms
+  contact:
+    name: Koala Support
+    email: support@getkoala.com
+    url: https://getkoala.com/docs
+  version: '1.0'
+servers:
+  - url: https://api2.getkoala.com
+    description: Collection API (public project key in path)
+  - url: https://app.getkoala.com
+    description: Application / admin API (secret bearer key)
+tags:
+  - name: Collection
+    description: Server-side ingestion of visitor identifies, events, and traits.
+  - name: Accounts
+    description: Account-level (company) trait and event ingestion.
+  - name: SDK
+    description: Bootstrap configuration used by the client-side pixel.
+  - name: Deletion
+    description: GDPR right-to-erasure requests and status.
+paths:
+  /web/projects/{publicApiKey}:
+    get:
+      operationId: getProjectBootstrap
+      tags:
+        - SDK
+      summary: Get SDK bootstrap configuration
+      description: >-
+        Returns the JSON configuration the browser pixel needs to initialize
+        for this workspace. Also useful to verify that a public key or a custom
+        reverse-proxy install resolves correctly (a valid key returns a JSON
+        response).
+      parameters:
+        - $ref: '#/components/parameters/PublicApiKey'
+      responses:
+        '200':
+          description: Bootstrap configuration returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '404':
+          description: Unknown or disabled project key.
+  /web/projects/{publicApiKey}/batch:
+    post:
+      operationId: collectBatch
+      tags:
+        - Collection
+      summary: Ingest visitor identifies, events, and traits
+      description: >-
+        Sends a batch of visitor-level data to Koala. The request body MUST
+        include a top-level `profile_id` (from the `ko_id` cookie) or `email`
+        so the payload can be attached to a visitor. Each of `events` and
+        `identifies` is limited to 30 entries per request, and every event in a
+        single request must belong to the same person. A `User-Agent` header is
+        required or the request may be dropped as bot traffic. Authenticated by
+        the public project key in the path.
+      parameters:
+        - $ref: '#/components/parameters/PublicApiKey'
+        - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+            examples:
+              identifyOnly:
+                summary: Minimal identify
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: person@example.com
+              customEvent:
+                summary: Custom event
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: netto@getkoala.com
+                  events:
+                    - message_id: 4b1e-idempotency-key
+                      type: track
+                      event: Created Account
+                      properties: {}
+                      sent_at: '2022-11-09T23:57:14.776Z'
+              traits:
+                summary: Visitor traits
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: user@example.org
+                  identifies:
+                    - type: identify
+                      sent_at: '2023-11-30T02:51:36.840Z'
+                      traits:
+                        email: user@example.org
+                        billing_plan: pro
+                        vip: true
+      responses:
+        '200':
+          description: Batch accepted for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionAck'
+        '400':
+          description: Missing profile_id/email or malformed payload.
+  /web/projects/{publicApiKey}/accounts/batch:
+    post:
+      operationId: collectAccountBatch
+      tags:
+        - Accounts
+      summary: Ingest account (company) traits and events
+      description: >-
+        Sends account-level firmographic traits and/or account events tied to a
+        company `domain` (recommended) or Koala `account_id`. An optional
+        `group_id` disambiguates multiple tenants/workspaces that map to the
+        same domain. Koala auto-creates the account if the domain has not been
+        seen. Authenticated by the public project key in the path.
+      parameters:
+        - $ref: '#/components/parameters/PublicApiKey'
+        - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountBatchRequest'
+            examples:
+              accountTraits:
+                summary: Account traits
+                value:
+                  domain: getkoala.com
+                  identifies:
+                    - type: identify
+                      traits:
+                        billing_plan: pro
+                        vip: true
+                        headcount: 100
+              accountEvent:
+                summary: Account event
+                value:
+                  domain: getkoala.com
+                  events:
+                    - message_id: any-idempotent-id
+                      type: track
+                      event: Workspace Created
+                      properties:
+                        workspace_id: '1234567890'
+                        workspace_name: Acme, Inc.
+                      sent_at: '2022-11-09T23:57:14.776Z'
+      responses:
+        '200':
+          description: Account batch accepted for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionAck'
+        '400':
+          description: Missing domain/account_id or malformed payload.
+  /api/v1/deletion-requests:
+    post:
+      operationId: createDeletionRequest
+      tags:
+        - Deletion
+      summary: Request GDPR deletion for a set of emails
+      description: >-
+        Queues a right-to-erasure deletion for up to 50 email addresses (extra
+        emails beyond the first 50 are ignored). Returns a
+        `deletion_request_id` used to poll status. Authenticated with a secret
+        API key via `Authorization: Bearer sk_...`.
+      security:
+        - SecretApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletionRequest'
+            example:
+              emails:
+                - emails1@email.com
+                - emails2@gmail.com
+      responses:
+        '200':
+          description: Deletion request accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionRequestCreated'
+        '401':
+          description: Missing or invalid secret API key.
+  /api/v1/deletion-requests/{deletionRequestId}:
+    get:
+      operationId: getDeletionRequest
+      tags:
+        - Deletion
+      summary: Check GDPR deletion status
+      description: >-
+        Returns the status and, once completed, the deletion receipt for a
+        previously created deletion request. Authenticated with the same secret
+        API key.
+      security:
+        - SecretApiKey: []
+      parameters:
+        - name: deletionRequestId
+          in: path
+          required: true
+          description: The id returned by createDeletionRequest.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deletion request status and receipt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionRequestStatus'
+        '401':
+          description: Missing or invalid secret API key.
+        '404':
+          description: Unknown deletion request id.
+components:
+  parameters:
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: >-
+        The workspace public (publishable) project key. This is not a secret;
+        the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: >-
+        Required. Identify your integration (e.g. `your-company-name/1.0.0`).
+        Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
+  securitySchemes:
+    SecretApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: sk_
+      description: >-
+        Secret API key created in Settings -> API Keys, sent as
+        `Authorization: Bearer sk_...`. Used only by the Deletion (GDPR) API.
+  schemas:
+    BatchRequest:
+      type: object
+      description: >-
+        A visitor-scoped batch. At least one of profile_id or email is
+        required at the top level.
+      properties:
+        profile_id:
+          type: string
+          format: uuid
+          description: The Koala anonymous id read from the `ko_id` cookie (UUID v4).
+        email:
+          type: string
+          format: email
+          description: Known email used to link this visitor to an identified profile.
+        events:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+        identifies:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/IdentifyCall'
+        page_views:
+          type: array
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: true
+      anyOf:
+        - required:
+            - profile_id
+        - required:
+            - email
+    AccountBatchRequest:
+      type: object
+      description: >-
+        An account-scoped batch. At least one of domain or account_id is
+        required; domain is recommended.
+      properties:
+        domain:
+          type: string
+          description: Company domain used as the account key (e.g. getkoala.com).
+        account_id:
+          type: string
+          description: Koala account id, if you already have one.
+        group_id:
+          type: string
+          description: >-
+            Optional grouping key to disambiguate multiple tenants mapping to
+            the same domain.
+        events:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+        identifies:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/IdentifyCall'
+      anyOf:
+        - required:
+            - domain
+        - required:
+            - account_id
+    TrackEvent:
+      type: object
+      properties:
+        message_id:
+          type: string
+          description: Idempotency key used to dedupe replayed/retried events.
+        type:
+          type: string
+          enum:
+            - track
+          default: track
+        event:
+          type: string
+          description: Event name (e.g. "Created Account").
+        properties:
+          type: object
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+      required:
+        - event
+    IdentifyCall:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - identify
+          default: identify
+        sent_at:
+          type: string
+          format: date-time
+        traits:
+          type: object
+          description: >-
+            Arbitrary visitor or account traits (email, billing_plan, vip,
+            headcount, group_id, etc.).
+          additionalProperties: true
+      required:
+        - traits
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
+    DeletionRequest:
+      type: object
+      required:
+        - emails
+      properties:
+        emails:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: email
+    DeletionRequestCreated:
+      type: object
+      properties:
+        deletion_request_id:
+          type: string
+          format: uuid
+    DeletionRequestStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          example: completed
+        input:
+          type: array
+          items:
+            type: string
+        deleted_receipt:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            type: string

@@ -1,0 +1,20 @@
+{
+  "provider": "koala-io",
+  "sources": [
+    "koala-io-accounts-api-openapi.yml",
+    "koala-io-collection-api-openapi.yml",
+    "koala-io-deletion-api-openapi.yml",
+    "koala-io-sdk-api-openapi.yml"
+  ],
+  "outputs": [
+    "koala-io-accounts-api-openapi.yml",
+    "koala-io-collection-api-openapi.yml",
+    "koala-io-deletion-api-openapi.yml",
+    "koala-io-sdk-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
