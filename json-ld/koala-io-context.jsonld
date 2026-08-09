@@ -1,0 +1,111 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "koala": "https://getkoala.com/vocab#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "profile_id": {
+      "@id": "koala:profileId",
+      "@type": "xsd:string",
+      "comment": "UUID v4 anonymous visitor identifier from the ko_id cookie"
+    },
+    "email": {
+      "@id": "schema:email",
+      "@type": "xsd:string"
+    },
+    "domain": {
+      "@id": "schema:url",
+      "@type": "xsd:string",
+      "comment": "Company domain used to identify or create a Koala Account"
+    },
+    "account_id": {
+      "@id": "koala:accountId",
+      "@type": "xsd:string"
+    },
+    "group_id": {
+      "@id": "koala:groupId",
+      "@type": "xsd:string",
+      "comment": "Tenant disambiguator within a shared company domain"
+    },
+    "message_id": {
+      "@id": "koala:messageId",
+      "@type": "xsd:string",
+      "comment": "Idempotency key for track events"
+    },
+    "sent_at": {
+      "@id": "koala:sentAt",
+      "@type": "xsd:dateTime"
+    },
+    "event": {
+      "@id": "koala:eventName",
+      "@type": "xsd:string"
+    },
+    "type": {
+      "@id": "koala:messageType",
+      "@type": "xsd:string",
+      "comment": "Segment-compatible message type: track | identify | page"
+    },
+    "traits": {
+      "@id": "koala:traits",
+      "@type": "@json",
+      "comment": "Arbitrary key-value traits associated with a visitor or account"
+    },
+    "properties": {
+      "@id": "koala:properties",
+      "@type": "@json",
+      "comment": "Arbitrary key-value properties on a track or page event"
+    },
+    "events": {
+      "@id": "koala:events",
+      "@container": "@list"
+    },
+    "identifies": {
+      "@id": "koala:identifies",
+      "@container": "@list"
+    },
+    "page_views": {
+      "@id": "koala:pageViews",
+      "@container": "@list"
+    },
+    "billing_plan": {
+      "@id": "koala:billingPlan",
+      "@type": "xsd:string"
+    },
+    "vip": {
+      "@id": "koala:vip",
+      "@type": "xsd:boolean"
+    },
+    "headcount": {
+      "@id": "koala:headcount",
+      "@type": "xsd:integer"
+    },
+    "is_current_customer": {
+      "@id": "koala:isCurrentCustomer",
+      "@type": "xsd:boolean"
+    },
+    "ko_id": {
+      "@id": "koala:koId",
+      "@type": "xsd:string",
+      "comment": "Cookie name used by the Koala pixel to persist the anonymous profile_id"
+    },
+    "IntentSignal": {
+      "@id": "koala:IntentSignal",
+      "comment": "A behavioral or third-party indicator of purchase intent aggregated by Koala"
+    },
+    "BuyerSignal": {
+      "@id": "koala:BuyerSignal",
+      "comment": "Composite scoring of intent signals ranking account likelihood to purchase"
+    },
+    "KoalaAccount": {
+      "@id": "koala:Account",
+      "@type": "schema:Organization",
+      "comment": "A company or organization tracked in Koala, keyed by domain or account_id"
+    },
+    "KoalaProfile": {
+      "@id": "koala:Profile",
+      "@type": "schema:Person",
+      "comment": "An individual visitor tracked in Koala, identified by profile_id or email"
+    }
+  }
+}

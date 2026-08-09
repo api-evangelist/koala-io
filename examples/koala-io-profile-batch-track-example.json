@@ -1,0 +1,20 @@
+{
+  "summary": "Send a custom track event server-side for a known visitor",
+  "description": "Sent to POST https://api2.getkoala.com/web/projects/{publicApiKey}/batch",
+  "value": {
+    "profile_id": "3e6a2c18-3b02-40c4-b8d2-1842c193d3ba",
+    "email": "netto@getkoala.com",
+    "events": [
+      {
+        "message_id": "abc123-unique-id",
+        "type": "track",
+        "event": "Created Account",
+        "properties": {
+          "plan": "pro",
+          "source": "onboarding"
+        },
+        "sent_at": "2022-11-09T23:57:14.776Z"
+      }
+    ]
+  }
+}

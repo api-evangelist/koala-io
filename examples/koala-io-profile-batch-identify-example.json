@@ -1,0 +1,20 @@
+{
+  "summary": "Identify a visitor server-side using profile_id and email",
+  "description": "Sent to POST https://api2.getkoala.com/web/projects/{publicApiKey}/batch",
+  "value": {
+    "profile_id": "3e6a2c18-3b02-40c4-b8d2-1842c193d3ba",
+    "email": "person@example.com",
+    "identifies": [
+      {
+        "type": "identify",
+        "sent_at": "2023-11-30T02:51:36.840Z",
+        "traits": {
+          "email": "person@example.com",
+          "billing_plan": "pro",
+          "vip": true,
+          "is_current_customer": true
+        }
+      }
+    ]
+  }
+}

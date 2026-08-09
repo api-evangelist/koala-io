@@ -1,0 +1,17 @@
+{
+  "summary": "Send account-level traits for a company domain",
+  "description": "Sent to POST https://api2.getkoala.com/web/projects/{publicApiKey}/accounts/batch",
+  "value": {
+    "domain": "getkoala.com",
+    "identifies": [
+      {
+        "type": "identify",
+        "traits": {
+          "billing_plan": "pro",
+          "vip": true,
+          "headcount": 100
+        }
+      }
+    ]
+  }
+}

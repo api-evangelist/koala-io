@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: Koala Server-Side Account Ingestion Profile Ingestion API
+  description: 'RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala''s intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.
+
+    '
+  version: 1.0.0
+  contact:
+    name: Koala Developer Docs
+    url: https://getkoala.com/docs/developer-guides/server-side
+  termsOfService: https://getkoala.com/legal/terms
+servers:
+- url: https://api2.getkoala.com/web/projects/{publicApiKey}
+  description: Koala collection endpoint (replace {publicApiKey} with your workspace public API key)
+  variables:
+    publicApiKey:
+      default: my-public-api-key
+      description: Your Koala workspace public API key
+tags:
+- name: Profile Ingestion
+  description: Endpoints for sending events and traits tied to individual visitors (profiles).
+paths:
+  /batch:
+    post:
+      operationId: sendProfileBatch
+      summary: Send profile-level batch events, identifies, and page views
+      description: 'Ingests a batch of events, identify calls, and/or page views tied to a single profile (visitor). Each request must include either a `profile_id` (UUID v4 read from the `ko_id` cookie) or an `email`. A maximum of 30 entries each of events, identifies, and page_views per request is enforced. All entries in a single request must belong to the same person.
+
+        '
+      tags:
+      - Profile Ingestion
+      parameters:
+      - name: publicApiKey
+        in: path
+        required: true
+        description: Your Koala workspace public API key
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileBatchRequest'
+            examples:
+              identify:
+                summary: Identify a visitor
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: person@example.com
+              trackEvent:
+                summary: Send a custom event
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: netto@getkoala.com
+                  events:
+                  - message_id: abc123-unique-id
+                    type: track
+                    event: Created Account
+                    properties: {}
+                    sent_at: '2022-11-09T23:57:14.776Z'
+              sendTraits:
+                summary: Send visitor traits
+                value:
+                  profile_id: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+                  email: user@example.org
+                  identifies:
+                  - type: identify
+                    sent_at: '2023-11-30T02:51:36.840Z'
+                    traits:
+                      email: user@example.org
+                      billing_plan: pro
+                      vip: true
+                      is_current_customer: true
+      responses:
+        '200':
+          description: Batch accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request — missing required identifier or malformed payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — invalid or missing public API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests — rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+components:
+  schemas:
+    BatchResponse:
+      type: object
+      description: Successful batch acceptance response.
+      properties:
+        ok:
+          type: boolean
+          description: Indicates the batch was accepted.
+          example: true
+    PageView:
+      type: object
+      description: A page view event in the Segment-compatible format.
+      required:
+      - type
+      properties:
+        message_id:
+          type: string
+          description: Optional idempotency key.
+        type:
+          type: string
+          enum:
+          - page
+          description: Must be "page".
+        name:
+          type: string
+          description: Human-readable page name.
+        properties:
+          type: object
+          description: Arbitrary properties including url, referrer, title, etc.
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the page view was captured.
+    ProfileBatchRequest:
+      type: object
+      description: 'Payload for the profile /batch endpoint. Must include at least one of `profile_id` or `email`. Optionally includes up to 30 each of `events`, `identifies`, and `page_views`.
+
+        '
+      properties:
+        profile_id:
+          type: string
+          format: uuid
+          description: 'UUID v4 anonymous visitor identifier read from the `ko_id` cookie set by the Koala JavaScript pixel.
+
+            '
+          example: 3e6a2c18-3b02-40c4-b8d2-1842c193d3ba
+        email:
+          type: string
+          format: email
+          description: Known email address of the visitor for identity resolution.
+          example: person@example.com
+        events:
+          type: array
+          maxItems: 30
+          description: Custom track events to associate with this profile.
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+        identifies:
+          type: array
+          maxItems: 30
+          description: Identify calls carrying visitor trait data.
+          items:
+            $ref: '#/components/schemas/IdentifyCall'
+        page_views:
+          type: array
+          maxItems: 30
+          description: Page view events to associate with this profile.
+          items:
+            $ref: '#/components/schemas/PageView'
+      anyOf:
+      - required:
+        - profile_id
+      - required:
+        - email
+    IdentifyCall:
+      type: object
+      description: An identify call carrying visitor-level traits.
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          description: Must be "identify".
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the identify was generated.
+          example: '2023-11-30T02:51:36.840Z'
+        traits:
+          type: object
+          description: Arbitrary key-value traits to associate with the visitor.
+          additionalProperties: true
+          properties:
+            email:
+              type: string
+              format: email
+            billing_plan:
+              type: string
+            vip:
+              type: boolean
+            is_current_customer:
+              type: boolean
+    ErrorResponse:
+      type: object
+      description: Error response body.
+      properties:
+        error:
+          type: string
+          description: Human-readable error message.
+        code:
+          type: string
+          description: Machine-readable error code.
+    TrackEvent:
+      type: object
+      description: A custom track event in the Segment-compatible format.
+      required:
+      - type
+      - event
+      properties:
+        message_id:
+          type: string
+          description: 'Optional idempotency key. If omitted, the event may be captured more than once on retry. Use a UUID or other unique string.
+
+            '
+          example: abc123-unique-id
+        type:
+          type: string
+          enum:
+          - track
+          description: Must be "track".
+        event:
+          type: string
+          description: Human-readable event name.
+          example: Created Account
+        properties:
+          type: object
+          description: Arbitrary key-value properties associated with the event.
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the event was generated.
+          example: '2022-11-09T23:57:14.776Z'
+externalDocs:
+  description: Koala Developer Guides
+  url: https://getkoala.com/docs/developer-guides/server-side

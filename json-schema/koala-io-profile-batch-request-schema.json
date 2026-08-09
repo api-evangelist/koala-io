@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/koala/main/json-schema/koala-profile-batch-request-schema.json",
+  "title": "KoalaProfileBatchRequest",
+  "description": "Request body for the Koala Server-Side /batch endpoint. Sends profile-level events, identify calls, and page views for a single visitor.",
+  "type": "object",
+  "anyOf": [
+    { "required": ["profile_id"] },
+    { "required": ["email"] }
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID v4 anonymous visitor identifier from the ko_id cookie.",
+      "example": "3e6a2c18-3b02-40c4-b8d2-1842c193d3ba"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Known email address of the visitor.",
+      "example": "person@example.com"
+    },
+    "events": {
+      "type": "array",
+      "description": "Custom track events, up to 30 per request.",
+      "maxItems": 30,
+      "items": { "$ref": "#/$defs/TrackEvent" }
+    },
+    "identifies": {
+      "type": "array",
+      "description": "Identify calls with visitor traits, up to 30 per request.",
+      "maxItems": 30,
+      "items": { "$ref": "#/$defs/IdentifyCall" }
+    },
+    "page_views": {
+      "type": "array",
+      "description": "Page view events, up to 30 per request.",
+      "maxItems": 30,
+      "items": { "$ref": "#/$defs/PageView" }
+    }
+  },
+  "$defs": {
+    "TrackEvent": {
+      "type": "object",
+      "required": ["type", "event"],
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "description": "Idempotency key. Omit to allow potential duplicates on retry."
+        },
+        "type": {
+          "type": "string",
+          "const": "track"
+        },
+        "event": {
+          "type": "string",
+          "description": "Human-readable event name.",
+          "example": "Created Account"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "IdentifyCall": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "identify"
+        },
+        "sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "traits": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "email": { "type": "string", "format": "email" },
+            "billing_plan": { "type": "string" },
+            "vip": { "type": "boolean" },
+            "is_current_customer": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "PageView": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "message_id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "const": "page"
+        },
+        "name": { "type": "string" },
+        "properties": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

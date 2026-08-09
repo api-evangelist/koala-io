@@ -2,13 +2,12 @@ aid: koala-io
 url: https://raw.githubusercontent.com/api-evangelist/koala-io/refs/heads/main/apis.yml
 name: Koala
 kind: company
-description: Koala is a B2B buyer-intent and go-to-market platform that de-anonymizes
-  website and product traffic, identifies the visitors and companies behind it,
-  enriches them with firmographic and contact data (via Clearbit Reveal/Enrich and
-  ZoomInfo), and scores first-party intent so sales teams can act on the accounts
-  showing the strongest signals. Its developer surface is a client-side JavaScript
-  pixel plus an HTTP collection API for server-side identify, event, and account
-  ingestion, with a separate secret-key admin API for GDPR deletion.
+description: Koala is a B2B buyer-intent and go-to-market platform that de-anonymizes website and product
+  traffic, identifies the visitors and companies behind it, enriches them with firmographic and contact
+  data (via Clearbit Reveal/Enrich and ZoomInfo), and scores first-party intent so sales teams can act
+  on the accounts showing the strongest signals. Its developer surface is a client-side JavaScript pixel
+  plus an HTTP collection API for server-side identify, event, and account ingestion, with a separate
+  secret-key admin API for GDPR deletion.
 accessModel:
   pricing: freemium
   onboarding: self-serve
@@ -32,7 +31,7 @@ tags:
 - Sales Intelligence
 - B2B
 created: '2026-07-01'
-modified: '2026-07-01'
+modified: '2026-08-08'
 specificationVersion: '0.19'
 apis:
 - aid: koala-io:koala-io-web-pixel-sdk
@@ -54,11 +53,10 @@ apis:
     type: Documentation
   - url: https://getkoala.com/docs/sdk/autotracking
     type: Documentation
-  description: >-
-    The client-side pixel loaded from cdn.getkoala.com/v1/{key}/sdk.js. Exposes ko.identify(), ko.track(),
-    ko.qualify(), ko.reset() and autotracks pageviews, form fills, and session time. This is a browser
-    SDK, not a REST resource, and it de-anonymizes traffic client-side into the same collection pipeline
-    as the Batch API.
+  description: The client-side pixel loaded from cdn.getkoala.com/v1/{key}/sdk.js. Exposes ko.identify(),
+    ko.track(), ko.qualify(), ko.reset() and autotracks pageviews, form fills, and session time. This
+    is a browser SDK, not a REST resource, and it de-anonymizes traffic client-side into the same collection
+    pipeline as the Batch API.
 - aid: koala-io:koala-io-accounts-api
   name: Koala Accounts API
   description: Account-level (company) trait and event ingestion.
@@ -178,6 +176,24 @@ common:
   url: rate-limits/koala-io-rate-limits.yml
 - type: FinOps
   url: finops/koala-io-finops.yml
+- type: X
+  url: https://x.com/getkoala_com
+- type: Blog
+  url: https://getkoala.com/blog
+- type: Pricing
+  url: https://getkoala.com/pricing
+- type: SDKs
+  url: https://github.com/getkoala/react
+- type: NPM
+  url: https://www.npmjs.com/package/@getkoala/edge-api-client
+- type: Vocabulary
+  url: https://raw.githubusercontent.com/api-evangelist/koala/refs/heads/main/vocabulary/koala-vocabulary.yml
+- type: JSONLDContext
+  url: https://raw.githubusercontent.com/api-evangelist/koala/refs/heads/main/json-ld/koala-context.jsonld
+- type: JSONSchema
+  url: https://raw.githubusercontent.com/api-evangelist/koala/refs/heads/main/json-schema/koala-profile-batch-request-schema.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
+x-merged-from:
+- koala

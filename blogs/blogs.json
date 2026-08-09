@@ -1,0 +1,14 @@
+{
+  "repo": "koala",
+  "feeds": [
+    {
+      "source": "https://x.com/getkoala_com",
+      "feed_url": "https://x.com/getkoala_com",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    }
+  ],
+  "post_count": 0,
+  "fetched": "2026-08-06T14:08:46Z"
+}

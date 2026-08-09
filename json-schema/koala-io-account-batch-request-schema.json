@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/koala/main/json-schema/koala-account-batch-request-schema.json",
+  "title": "KoalaAccountBatchRequest",
+  "description": "Request body for the Koala Server-Side /accounts/batch endpoint. Sends account-level traits and events tied to a company domain or account_id.",
+  "type": "object",
+  "anyOf": [
+    { "required": ["account_id"] },
+    { "required": ["domain"] }
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "Koala internal account identifier.",
+      "example": "acct_abc123"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Company domain used to look up or create the account.",
+      "example": "getkoala.com"
+    },
+    "identifies": {
+      "type": "array",
+      "description": "Account-level identify calls with trait data.",
+      "items": { "$ref": "#/$defs/AccountIdentifyCall" }
+    },
+    "events": {
+      "type": "array",
+      "description": "Account-level track events.",
+      "items": { "$ref": "#/$defs/TrackEvent" }
+    }
+  },
+  "$defs": {
+    "AccountIdentifyCall": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "identify"
+        },
+        "sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "traits": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "group_id": {
+              "type": "string",
+              "description": "Tenant disambiguator for multi-tenant accounts.",
+              "example": "development-team"
+            },
+            "billing_plan": { "type": "string" },
+            "vip": { "type": "boolean" },
+            "headcount": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "TrackEvent": {
+      "type": "object",
+      "required": ["type", "event"],
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "description": "Idempotency key."
+        },
+        "type": {
+          "type": "string",
+          "const": "track"
+        },
+        "event": {
+          "type": "string",
+          "example": "Workspace Created"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

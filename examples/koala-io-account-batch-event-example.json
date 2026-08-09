@@ -1,0 +1,19 @@
+{
+  "summary": "Send an account-level event for a company domain",
+  "description": "Sent to POST https://api2.getkoala.com/web/projects/{publicApiKey}/accounts/batch",
+  "value": {
+    "domain": "getkoala.com",
+    "events": [
+      {
+        "message_id": "event-uuid-1234",
+        "type": "track",
+        "event": "Workspace Created",
+        "properties": {
+          "workspace_id": "1234567890",
+          "workspace_name": "Acme, Inc."
+        },
+        "sent_at": "2022-11-09T23:57:14.776Z"
+      }
+    ]
+  }
+}

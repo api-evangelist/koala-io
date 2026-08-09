@@ -1,0 +1,135 @@
+vocabulary:
+  title: Koala API Vocabulary
+  description: >
+    Domain terms and concepts used across the Koala intent data and buyer
+    signal platform APIs.
+  provider: koala
+  url: https://getkoala.com/docs
+  terms:
+    - term: profile_id
+      definition: >
+        A UUID v4 anonymous visitor identifier set and read via the `ko_id`
+        cookie placed by the Koala JavaScript pixel. Used to correlate
+        server-side events with client-side session data across the same
+        top-level domain.
+      type: identifier
+
+    - term: email
+      definition: >
+        Known email address of a visitor used as an alternative identifier
+        to profile_id for identity resolution in the Koala identity graph.
+      type: identifier
+
+    - term: batch
+      definition: >
+        A single HTTP request to the /batch or /accounts/batch endpoint
+        containing up to 30 each of events, identifies, and page_views
+        (profile level) or identifies and events (account level).
+      type: concept
+
+    - term: track
+      definition: >
+        A Segment-compatible event type representing a discrete user action
+        (e.g. "Created Account"). Includes an event name, optional properties,
+        and an optional message_id idempotency key.
+      type: event-type
+
+    - term: identify
+      definition: >
+        A Segment-compatible call that associates a set of traits (key-value
+        pairs) with a visitor or account. Profile identifies link traits to
+        a specific person; account identifies link traits to a company domain.
+      type: event-type
+
+    - term: page
+      definition: >
+        A Segment-compatible event type representing a page view. Can be
+        sent server-side via the profile /batch endpoint.
+      type: event-type
+
+    - term: account
+      definition: >
+        A company or organization tracked in Koala, identified by a domain
+        (e.g. "example.com") or an internal account_id. Account-level data
+        is shared across all visitors associated with the same company.
+      type: resource
+
+    - term: domain
+      definition: >
+        The company domain (e.g. "acme.com") used as the primary key for
+        an Account in Koala. Koala auto-creates the Account if the domain
+        has not been tracked before.
+      type: identifier
+
+    - term: account_id
+      definition: >
+        Koala's internal identifier for an Account, used as an alternative
+        to domain in account-level batch requests.
+      type: identifier
+
+    - term: group_id
+      definition: >
+        An optional parameter in account identify calls that allows
+        disambiguation of multiple tenant groups within the same company
+        domain (e.g. "development-team" vs "marketing-team").
+      type: identifier
+
+    - term: message_id
+      definition: >
+        An idempotency key supplied on track events to prevent duplicate
+        ingestion if a request is retried. Can be any unique string (UUID
+        recommended). If omitted, the event may be ingested more than once.
+      type: concept
+
+    - term: traits
+      definition: >
+        Arbitrary key-value properties attached to a visitor (profile identify)
+        or company (account identify). Traits are stored and made available
+        in the Koala app for filtering, scoring, and enrichment purposes.
+      type: concept
+
+    - term: intent signal
+      definition: >
+        A behavioral or third-party indicator that a company or person is
+        researching or ready to buy a product. Koala unifies first-party
+        product usage and website behavior with third-party intent data
+        to produce intent signals.
+      type: concept
+
+    - term: buyer signal
+      definition: >
+        A composite scoring of intent signals used to rank accounts by
+        their likelihood to purchase. Koala surfaces buyer signals to
+        sales and marketing teams for prioritization.
+      type: concept
+
+    - term: public_api_key
+      definition: >
+        A workspace-scoped public key included in the URL path of every
+        Koala collection API request
+        (e.g. /web/projects/{publicApiKey}/batch). This key is safe to
+        expose client-side in the JavaScript snippet.
+      type: identifier
+
+    - term: ko_id
+      definition: >
+        The cookie name set by the Koala JavaScript pixel to persist the
+        anonymous profile_id. Backend applications should read this cookie
+        from incoming requests to link server-side events to the correct
+        visitor session.
+      type: concept
+
+    - term: edge API
+      definition: >
+        A variant of the Koala collection API designed for deployment in
+        Cloudflare Workers, Vercel Edge Functions, and similar edge compute
+        environments. Provides low-latency visitor identification before
+        requests reach the origin server.
+      type: concept
+
+    - term: sent_at
+      definition: >
+        An ISO 8601 timestamp indicating when an event, identify, or page
+        view was generated by the client. Used for accurate time-series
+        reporting in the Koala app.
+      type: concept

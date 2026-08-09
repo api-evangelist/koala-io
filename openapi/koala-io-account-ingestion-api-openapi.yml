@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: Koala Server-Side Account Ingestion API
+  description: 'RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala''s intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.
+
+    '
+  version: 1.0.0
+  contact:
+    name: Koala Developer Docs
+    url: https://getkoala.com/docs/developer-guides/server-side
+  termsOfService: https://getkoala.com/legal/terms
+servers:
+- url: https://api2.getkoala.com/web/projects/{publicApiKey}
+  description: Koala collection endpoint (replace {publicApiKey} with your workspace public API key)
+  variables:
+    publicApiKey:
+      default: my-public-api-key
+      description: Your Koala workspace public API key
+tags:
+- name: Account Ingestion
+  description: Endpoints for sending events and traits tied to company accounts.
+paths:
+  /accounts/batch:
+    post:
+      operationId: sendAccountBatch
+      summary: Send account-level batch events and traits
+      description: 'Ingests a batch of identify calls (traits) and/or events associated with a company account rather than an individual visitor. Each request must include either an `account_id` or `domain`. Koala will create a new Account automatically if the domain has not been tracked before. Use the optional `group_id` inside each identify to disambiguate multiple tenants sharing the same domain.
+
+        '
+      tags:
+      - Account Ingestion
+      parameters:
+      - name: publicApiKey
+        in: path
+        required: true
+        description: Your Koala workspace public API key
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountBatchRequest'
+            examples:
+              accountTraits:
+                summary: Send account traits
+                value:
+                  domain: getkoala.com
+                  identifies:
+                  - type: identify
+                    traits:
+                      billing_plan: pro
+                      vip: true
+                      headcount: 100
+              accountTraitsMultiTenant:
+                summary: Send traits for multiple tenant groups
+                value:
+                  domain: getkoala.com
+                  identifies:
+                  - type: identify
+                    traits:
+                      group_id: development-team
+                      billing_plan: free
+                      vip: false
+                  - type: identify
+                    traits:
+                      group_id: marketing-team
+                      billing_plan: pro
+                      vip: true
+              accountEvent:
+                summary: Send an account-level event
+                value:
+                  domain: getkoala.com
+                  events:
+                  - message_id: event-uuid-1234
+                    type: track
+                    event: Workspace Created
+                    properties:
+                      workspace_id: '1234567890'
+                      workspace_name: Acme, Inc.
+                    sent_at: '2022-11-09T23:57:14.776Z'
+      responses:
+        '200':
+          description: Batch accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request — missing required identifier or malformed payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — invalid or missing public API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests — rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+components:
+  schemas:
+    BatchResponse:
+      type: object
+      description: Successful batch acceptance response.
+      properties:
+        ok:
+          type: boolean
+          description: Indicates the batch was accepted.
+          example: true
+    AccountBatchRequest:
+      type: object
+      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
+
+        '
+      properties:
+        account_id:
+          type: string
+          description: Koala internal account identifier.
+          example: acct_abc123
+        domain:
+          type: string
+          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
+
+            '
+          example: getkoala.com
+        identifies:
+          type: array
+          description: Account-level identify calls carrying trait data.
+          items:
+            $ref: '#/components/schemas/AccountIdentifyCall'
+        events:
+          type: array
+          description: Account-level track events.
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+      anyOf:
+      - required:
+        - account_id
+      - required:
+        - domain
+    AccountIdentifyCall:
+      type: object
+      description: An identify call carrying account-level traits.
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          description: Must be "identify".
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the identify was generated.
+        traits:
+          type: object
+          description: Arbitrary key-value traits to associate with the account.
+          additionalProperties: true
+          properties:
+            group_id:
+              type: string
+              description: 'Optional tenant disambiguator for companies with multiple groups.
+
+                '
+              example: development-team
+            billing_plan:
+              type: string
+            vip:
+              type: boolean
+            headcount:
+              type: integer
+    ErrorResponse:
+      type: object
+      description: Error response body.
+      properties:
+        error:
+          type: string
+          description: Human-readable error message.
+        code:
+          type: string
+          description: Machine-readable error code.
+    TrackEvent:
+      type: object
+      description: A custom track event in the Segment-compatible format.
+      required:
+      - type
+      - event
+      properties:
+        message_id:
+          type: string
+          description: 'Optional idempotency key. If omitted, the event may be captured more than once on retry. Use a UUID or other unique string.
+
+            '
+          example: abc123-unique-id
+        type:
+          type: string
+          enum:
+          - track
+          description: Must be "track".
+        event:
+          type: string
+          description: Human-readable event name.
+          example: Created Account
+        properties:
+          type: object
+          description: Arbitrary key-value properties associated with the event.
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the event was generated.
+          example: '2022-11-09T23:57:14.776Z'
+externalDocs:
+  description: Koala Developer Guides
+  url: https://getkoala.com/docs/developer-guides/server-side
