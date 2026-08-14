@@ -31,7 +31,7 @@ tags:
 - Sales Intelligence
 - B2B
 created: '2026-07-01'
-modified: '2026-08-08'
+modified: '2026-08-13'
 specificationVersion: '0.19'
 apis:
 - aid: koala-io:koala-io-web-pixel-sdk
@@ -67,6 +67,16 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/koala-io-accounts-api-openapi.yml
+  - type: OpenAPI
+    url: openapi/koala-io-account-ingestion-api-openapi.yml
+  - type: Overlay
+    url: overlays/koala-io-accounts-api-overlay.yaml
+  - type: Overlay
+    url: overlays/koala-io-account-ingestion-api-overlay.yaml
+  - type: PostmanCollection
+    url: collections/koala-io-account-ingestion-api.postman_collection.json
+  - type: OpenCollection
+    url: collections/koala-io-account-ingestion-api.opencollection.json
   - type: Documentation
     url: https://getkoala.com/docs/developer-guides/server-side
   - type: Documentation
@@ -91,6 +101,16 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/koala-io-collection-api-openapi.yml
+  - type: OpenAPI
+    url: openapi/koala-io-profile-ingestion-api-openapi.yml
+  - type: Overlay
+    url: overlays/koala-io-collection-api-overlay.yaml
+  - type: Overlay
+    url: overlays/koala-io-profile-ingestion-api-overlay.yaml
+  - type: PostmanCollection
+    url: collections/koala-io-profile-ingestion-api.postman_collection.json
+  - type: OpenCollection
+    url: collections/koala-io-profile-ingestion-api.opencollection.json
   - type: Documentation
     url: https://getkoala.com/docs/developer-guides/server-side
   - type: Documentation
@@ -108,13 +128,15 @@ apis:
 - aid: koala-io:koala-io-deletion-api
   name: Koala Deletion API
   description: GDPR right-to-erasure requests and status.
-  humanURL: https://getkoala.com/docs/developer-guides/server-side
-  baseURL: https://api2.getkoala.com/web/projects/{public_api_key}
+  humanURL: https://getkoala.com/docs/developer-guides/gdpr-endpoint
+  baseURL: https://app.getkoala.com
   tags:
   - Deletion
   properties:
   - type: OpenAPI
     url: openapi/koala-io-deletion-api-openapi.yml
+  - type: Overlay
+    url: overlays/koala-io-deletion-api-overlay.yaml
   - type: Documentation
     url: https://getkoala.com/docs/developer-guides/server-side
   - type: Documentation
@@ -139,6 +161,8 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/koala-io-sdk-api-openapi.yml
+  - type: Overlay
+    url: overlays/koala-io-sdk-api-overlay.yaml
   - type: Documentation
     url: https://getkoala.com/docs/developer-guides/server-side
   - type: Documentation
@@ -178,8 +202,6 @@ common:
   url: finops/koala-io-finops.yml
 - type: X
   url: https://x.com/getkoala_com
-- type: Blog
-  url: https://getkoala.com/blog
 - type: Pricing
   url: https://getkoala.com/pricing
 - type: SDKs
@@ -187,13 +209,82 @@ common:
 - type: NPM
   url: https://www.npmjs.com/package/@getkoala/edge-api-client
 - type: Vocabulary
-  url: https://raw.githubusercontent.com/api-evangelist/koala/refs/heads/main/vocabulary/koala-vocabulary.yml
+  url: vocabulary/koala-io-vocabulary.yml
 - type: JSONLDContext
-  url: https://raw.githubusercontent.com/api-evangelist/koala/refs/heads/main/json-ld/koala-context.jsonld
+  url: json-ld/koala-io-context.jsonld
 - type: JSONSchema
-  url: https://raw.githubusercontent.com/api-evangelist/koala/refs/heads/main/json-schema/koala-profile-batch-request-schema.json
+  url: json-schema/koala-io-profile-batch-request-schema.json
+- type: AgentCard
+  url: a2a/koala-io-a2a.yml
+- type: MCPServer
+  url: mcp/koala-io-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/koala-io-tool-crosswalk.yml
+- type: LLMsTxt
+  url: llms/koala-io-llms.txt
+- type: Packages
+  url: packages/koala-io-packages.yml
+- type: SDKs
+  url: packages/koala-io-packages.yml
+- type: Conventions
+  url: conventions/koala-io-conventions.yml
+- type: Idempotency
+  url: conventions/koala-io-conventions.yml
+- type: ErrorCatalog
+  url: errors/koala-io-problem-types.yml
+- type: DataModel
+  url: data-model/koala-io-data-model.yml
+- type: Lifecycle
+  url: lifecycle/koala-io-lifecycle.yml
+- type: StatusPage
+  url: https://koala.instatus.com
+- type: Deprecation
+  url: lifecycle/koala-io-lifecycle.yml
+- type: Conformance
+  url: conformance/koala-io-conformance.yml
+- type: Compliance
+  url: https://app.vanta.com/koala/trust/tzb87epi5imm1qbxktj0bn
+- type: VulnerabilityDisclosure
+  url: security/koala-io-vulnerability-disclosure.yml
+- type: Security
+  url: https://getkoala.com/security
+- type: Webhooks
+  url: asyncapi/koala-io-auto-outbound-webhooks.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: SpectralRules
+  url: rules/koala-io-jsonschema-spectral-rules.yml
+- type: Examples
+  url: examples/koala-io-profile-batch-identify-example.json
+- type: Examples
+  url: examples/koala-io-profile-batch-track-example.json
+- type: Examples
+  url: examples/koala-io-account-batch-traits-example.json
+- type: Examples
+  url: examples/koala-io-account-batch-event-example.json
+- type: JSONSchema
+  url: json-schema/koala-io-account-batch-request-schema.json
+- type: APIReference
+  url: https://getkoala.com/docs/developer-guides/server-side
+- type: GettingStarted
+  url: https://getkoala.com/docs/get-started/quick-start
+- type: SignUp
+  url: https://app.getkoala.com/signup
+- type: Login
+  url: https://app.getkoala.com/login
+- type: TermsOfService
+  url: https://getkoala.com/legal/terms
+- type: PrivacyPolicy
+  url: https://getkoala.com/legal/privacy
+- type: Support
+  url: mailto:support@getkoala.com
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 x-merged-from:
 - koala
+x-enrichment:
+  date: '2026-08-13'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v1
