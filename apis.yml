@@ -32,7 +32,7 @@ tags:
 - B2B
 created: '2026-07-01'
 modified: '2026-08-13'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: koala-io:koala-io-web-pixel-sdk
   name: Koala Web Pixel (JavaScript SDK)
