@@ -1,0 +1,153 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://getkoala.com/docs/developer-guides/server-side +
+  https://getkoala.com/docs/developer-guides/gdpr-endpoint +
+  https://getkoala.com/docs/developer-guides/custom-proxy-setup +
+  https://getkoala.com/docs/get-started/quick-start (read from the public docs source
+  at https://github.com/getkoala/docs and the Mintlify origin
+  https://koala.mintlify.app, because https://getkoala.com/docs was returning
+  HTTP 429 / Cloudflare 1027 on 2026-08-13) + derived from openapi/
+summary: >-
+  Koala's HTTP surface is two products with two different contracts. The collection
+  half (api2.getkoala.com) is a Segment-shaped batch ingestion API keyed by the
+  workspace PUBLIC project key carried in the URL path — no bearer token, no secret.
+  The admin half (app.getkoala.com/api/v1) is a conventional secret-bearer REST API
+  with exactly two operations, both about GDPR erasure. There is no read API: nothing
+  in the public surface returns a visitor, account, or intent record.
+authentication:
+  styles:
+  - name: Public project key in path
+    applies_to: [collection, accounts, sdk-bootstrap]
+    location: path
+    parameter: publicApiKey
+    example_form: https://api2.getkoala.com/web/projects/{public_api_key}/batch
+    secret: false
+    note: >-
+      The same key powers the browser pixel and is intentionally publishable. It is
+      a workspace routing identifier, not a credential — anyone who views a customer's
+      page source can write into that workspace's ingest.
+  - name: Secret API key bearer token
+    applies_to: [deletion]
+    location: header
+    header: Authorization
+    scheme: Bearer
+    token_prefix: sk_
+    provisioning: Koala app -> Settings -> API Keys
+    secret: true
+  oauth2: false
+  scopes: false
+  see_also: authentication/koala-io-authentication.yml
+idempotency:
+  supported: true
+  mechanism: per-entry idempotency key in the request body
+  field: message_id
+  location: each object in `events[]` (profile and account batches)
+  header: null
+  scope: event
+  retention: not published
+  behaviour: >-
+    "The `message_id` acts as an idempotency key to dedupe replayed/retried events."
+    It is OPTIONAL — "You can omit the `message_id` if you do not require it, but note
+    that the event could potentially be captured more than once (if retries are
+    needed)."
+  source: https://getkoala.com/docs/developer-guides/server-side
+  caveats:
+  - There is no request-level idempotency key; only individual events carry one.
+  - identifies[] and page_views[] entries have no message_id field, so trait writes
+    and page views are NOT deduplicated on replay.
+  - No published retention window for the dedupe key, so a safe retry horizon is unknown.
+  - 'The response body is {"ok": true} with no echo of which message_ids were accepted
+    or deduped, so a client cannot reconcile a partial retry.'
+pagination:
+  supported: false
+  note: >-
+    No operation in the public surface returns a collection. There is nothing to page.
+field_expansion:
+  supported: false
+sparse_fields:
+  supported: false
+metadata:
+  supported: true
+  mechanism: free-form `traits` object on identify calls, `properties` object on events
+  scopes:
+  - profile traits (attached via profile_id or email)
+  - account traits (attached via domain or account_id)
+  grouping:
+    field: group_id
+    note: >-
+      Optional key inside account traits used to disambiguate multiple tenants of the
+      same company (e.g. a customer's dev workspace vs marketing workspace).
+request_tracing:
+  request_id_header: null
+  supported: false
+  note: No request id or correlation header is documented or returned.
+versioning:
+  style: uri-path
+  current: v1
+  collection_path_versioned: false
+  admin_path_versioned: true
+  see_also: lifecycle/koala-io-lifecycle.yml
+error_envelope:
+  media_type: application/json
+  shape: '{"error": "...", "code": "..."}'
+  rfc9457: false
+  see_also: errors/koala-io-problem-types.yml
+rate_limit_signaling:
+  response_headers: []
+  status_on_exhaustion: 429
+  retry_after: not documented
+  note: >-
+    Koala publishes no RateLimit-* or X-RateLimit-* headers and no numeric limits.
+    See rate-limits/koala-io-rate-limits.yml.
+required_headers:
+- name: User-Agent
+  required: true
+  enforcement: silent-drop
+  detail: >-
+    "Please make sure to always include the `User-Agent` header in your requests to
+    Koala, or it may be flagged as a bot and not processed." Omitting it does not
+    produce an error — the request is accepted and discarded.
+  source: https://getkoala.com/docs/developer-guides/server-side
+- name: Content-Type
+  required: true
+  value: application/json
+batch_constraints:
+- Maximum 30 `events` per request
+- Maximum 30 `identifies` per request
+- Maximum 30 `page_views` per request
+- All entries in one /batch request must belong to the same person
+- A /batch request must carry a top-level `profile_id` or `email`
+- An /accounts/batch request must carry a top-level `domain` or `account_id`
+- The Deletion API takes at most 50 emails per request; emails beyond the first 50
+  are silently ignored
+identity:
+  anonymous_id:
+    cookie: ko_id
+    format: UUID v4
+    scope: top-level domain (shared across subdomains, not across TLDs)
+    note: >-
+      Server-side callers are expected to read `ko_id` off the inbound request and
+      pass it through as `profile_id`, or mint and set one themselves.
+  identity_resolution: email
+async_semantics:
+  model: fire-and-forget accept
+  success_body: '{"ok": true}'
+  note: >-
+    A 200 means the batch was accepted for processing, not that it was stored or
+    attributed. Combined with the User-Agent silent-drop rule this means success
+    responses carry very little information.
+proxying:
+  supported: true
+  mechanism: >-
+    Customers may front the API and CDN with their own CDN (CloudFront/nginx/Vercel
+    rewrites) to survive ad-blockers, pointing at proxy.getkoala.com and
+    cdn.getkoala.com and setting `window.koalaSettings = { host: ... }`.
+  constraint: Cloudflare cannot be used (no cross-account proxying).
+  source: https://getkoala.com/docs/developer-guides/custom-proxy-setup
+cross_links:
+  errors: errors/koala-io-problem-types.yml
+  lifecycle: lifecycle/koala-io-lifecycle.yml
+  authentication: authentication/koala-io-authentication.yml
+  rate_limits: rate-limits/koala-io-rate-limits.yml
+  data_model: data-model/koala-io-data-model.yml

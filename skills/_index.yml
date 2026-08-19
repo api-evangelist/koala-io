@@ -1,0 +1,28 @@
+generated: '2026-08-13'
+method: generated
+source: >-
+  openapi/ operationIds (grepped, never invented) +
+  conventions/koala-io-conventions.yml + errors/koala-io-problem-types.yml +
+  lifecycle/koala-io-lifecycle.yml
+provider_published_skills: false
+provider_published_skills_note: >-
+  Searched https://github.com/getkoala (14 public repos) and the public docs source
+  https://github.com/getkoala/docs for AGENTS.md or any packaged skill file — none
+  exist. These are API Evangelist generated skills.
+lifecycle_warning: >-
+  Every skill below opens with an availability check. Koala was acquired by Cursor and
+  shuts down 2026-09-30; the ingest hosts were already suspended when these were
+  written on 2026-08-13.
+skills:
+- file: koala-io-identify-a-visitor-server-side.md
+  name: Identify a Koala visitor from your backend
+  api: openapi/koala-io-profile-ingestion-api-openapi.yml
+  operations: [sendProfileBatch]
+- file: koala-io-send-account-traits-and-events.md
+  name: Send Koala account traits and events
+  api: openapi/koala-io-account-ingestion-api-openapi.yml
+  operations: [sendAccountBatch]
+- file: koala-io-request-gdpr-erasure.md
+  name: Request and verify a Koala GDPR erasure
+  api: openapi/koala-io-deletion-api-openapi.yml
+  operations: [createDeletionRequest, getDeletionRequest]

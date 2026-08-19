@@ -1,0 +1,119 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://registry.npmjs.org (metadata endpoint, unauthenticated) +
+  https://getkoala.com/docs/developer-guides/using-npm +
+  https://github.com/getkoala
+docs: https://getkoala.com/docs/developer-guides/using-npm
+summary:
+  languages:
+  - javascript
+  registries_searched:
+  - npm
+  - PyPI
+  - RubyGems
+  - Packagist
+  - crates.io
+  - NuGet
+  - Maven Central
+  - pkg.go.dev
+  registries_with_first_party_packages:
+  - npm
+  official_count: 3
+  note: >-
+    Koala ships JavaScript/TypeScript client libraries only. Searches of PyPI,
+    RubyGems, Packagist, crates.io, NuGet, Maven Central and pkg.go.dev returned no
+    first-party Koala (getkoala.com) client library; the server-side surface is
+    documented as raw HTTP against /batch and /accounts/batch, with no vendor SDK.
+packages:
+- language: javascript
+  registry: npm
+  name: '@getkoala/browser'
+  url: https://www.npmjs.com/package/@getkoala/browser
+  install: yarn add @getkoala/browser
+  official: true
+  version: 1.29.0
+  published: '2025-05-08'
+  first_published: '2022-10-21'
+  description: >-
+    The bundled Koala browser SDK, shipped to npm on every release. Used instead of
+    the CDN script tag when a project needs pinned versions, TypeScript types, or a
+    tighter build-system integration.
+  note: >-
+    Documented as the primary npm instrumentation path. Last release 2025-05-08 —
+    15 months before this probe, and before the 2026 Cursor acquisition.
+- language: javascript
+  registry: npm
+  name: '@getkoala/react'
+  url: https://www.npmjs.com/package/@getkoala/react
+  install: npm install @getkoala/react
+  official: true
+  version: 2.1.1
+  published: '2024-05-20'
+  first_published: '2022-10-21'
+  repository: https://github.com/getkoala/react
+  description: React hooks wrapping the Koala snippet + SDK.
+  note: >-
+    Last npm release 2024-05-20; the source repo's last push was 2024-08-13. Both
+    predate the last @getkoala/browser release, so the React wrapper trails the SDK
+    it wraps.
+- language: javascript
+  registry: npm
+  name: '@getkoala/edge-api-client'
+  url: https://www.npmjs.com/package/@getkoala/edge-api-client
+  install: npm install @getkoala/edge-api-client
+  official: true
+  version: 0.11.0
+  published: '2024-05-14'
+  first_published: '2022-10-21'
+  description: >-
+    Client for Koala's Edge API — the personalization/qualification engine used from
+    edge runtimes. Still pre-1.0.
+  note: >-
+    The Edge API this client wraps is not described by any of the OpenAPI documents
+    Koala's public docs support; examples live at https://github.com/getkoala/examples
+    (last push 2022-12-07).
+- language: javascript
+  registry: npm
+  name: '@getkoala/js-bloom'
+  url: https://www.npmjs.com/package/@getkoala/js-bloom
+  install: npm install @getkoala/js-bloom
+  official: true
+  version: 0.1.1
+  published: '2022-10-21'
+  first_published: '2022-10-21'
+  description: >-
+    Bloom filter serialisable to JSON, compatible with the Ruby counterpart. An
+    internal utility Koala published, not a client for the Koala API.
+  client_library: false
+- language: javascript
+  registry: npm
+  name: '@getkoala/crc32'
+  url: https://www.npmjs.com/package/@getkoala/crc32
+  install: npm install @getkoala/crc32
+  official: true
+  version: 0.1.1
+  published: '2022-10-21'
+  first_published: '2022-10-21'
+  repository: https://github.com/koala-live/crc32
+  description: Tiny CRC32 implementation. Internal utility, not an API client.
+  client_library: false
+cdn_distribution:
+- name: Koala pixel (sdk.js)
+  registry: cdn
+  url: https://cdn.getkoala.com/v1/{public_api_key}/sdk.js
+  official: true
+  version: null
+  published: null
+  note: >-
+    The script-tag distribution is UNPINNED — the snippet in Koala's quick start
+    loads /v1/<public key>/sdk.js with no version segment, so a consumer cannot tell
+    which build they are running (the docs tell you to read it back at runtime with
+    `ko.version` in the browser console). No CDN metadata endpoint is published, and
+    on 2026-08-13 cdn.getkoala.com returned HTTP 429 / Cloudflare error 1027 on every
+    request, so no version could be observed either.
+decay_signal: >-
+  Every first-party npm package predates the acquisition. The newest client release
+  is @getkoala/browser 1.29.0 (2025-05-08); the React wrapper has not shipped since
+  2024-05-20 and the Edge API client since 2024-05-14. With the product shutting down
+  2026-09-30 no further releases are expected.

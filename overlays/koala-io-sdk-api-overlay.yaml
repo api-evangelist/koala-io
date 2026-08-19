@@ -1,0 +1,45 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Koala Accounts SDK API
+  version: 1.0.0
+extends: openapi/koala-io-sdk-api-openapi.yml
+x-provenance:
+  generated: '2026-08-13'
+  method: generated
+  source: >-
+    Derived from the artifacts in this repo: lifecycle/koala-io-lifecycle.yml,
+    conventions/koala-io-conventions.yml, errors/koala-io-problem-types.yml,
+    data-model/koala-io-data-model.yml and the live probes taken on 2026-08-13.
+    The original document is never mutated.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: koala-io
+    x-apievangelist-artifacts:
+      conventions: conventions/koala-io-conventions.yml
+      errors: errors/koala-io-problem-types.yml
+      lifecycle: lifecycle/koala-io-lifecycle.yml
+      data-model: data-model/koala-io-data-model.yml
+      authentication: authentication/koala-io-authentication.yml
+      packages: packages/koala-io-packages.yml
+    x-lifecycle-status: sunsetting
+    x-end-of-life: '2026-09-30'
+    x-end-of-life-note: >-
+      Koala was acquired by Cursor and the product shuts down 2026-09-30. As of
+      2026-08-13 the ingest hosts (api2.getkoala.com, api.getkoala.com) return
+      HTTP 400 {"error": "Koala ingest suspended"} and app.getkoala.com returns
+      HTTP 530 (Cloudflare 1016). Treat every operation in this document as
+      historical unless re-probed.
+- target: $.servers
+  update:
+    x-availability: suspended
+    x-probed: '2026-08-13'
+- target: "$.paths['/web/projects/{publicApiKey}'].get"
+  update:
+    x-agent-notes:
+      idempotency: >-
+        No idempotency mechanism applies to this operation.
+      required_headers: [User-Agent, Content-Type]
+      silent_failure: >-
+        None documented.
+      probed_status_20260813: suspended

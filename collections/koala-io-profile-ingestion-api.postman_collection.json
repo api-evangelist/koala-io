@@ -1,0 +1,301 @@
+{
+  "item": [
+    {
+      "id": "8402fb3d-1699-4827-b913-3fa43dec594c",
+      "name": "Profile Ingestion",
+      "description": {
+        "content": "Endpoints for sending events and traits tied to individual visitors (profiles).",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "e22522d2-7a60-48c0-bb29-77a2ae800edd",
+          "name": "Send profile-level batch events, identifies, and page views",
+          "request": {
+            "name": "Send profile-level batch events, identifies, and page views",
+            "description": {
+              "content": "Ingests a batch of events, identify calls, and/or page views tied to a single profile (visitor). Each request must include either a `profile_id` (UUID v4 read from the `ko_id` cookie) or an `email`. A maximum of 30 entries each of events, identifies, and page_views per request is enforced. All entries in a single request must belong to the same person.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "batch"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "{{publicApiKey}}",
+                  "key": "publicApiKey",
+                  "description": "Your Koala workspace public API key"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "9f335541-4faa-43fa-8a6f-db8a6955da5a",
+              "name": "Batch accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "{{publicApiKey}}",
+                      "key": "publicApiKey",
+                      "description": "Your Koala workspace public API key"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a749bd37-2942-4b10-8306-b678796069ec",
+              "name": "Bad request — missing required identifier or malformed payload",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "{{publicApiKey}}",
+                      "key": "publicApiKey",
+                      "description": "Your Koala workspace public API key"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"string\",\n  \"code\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "03c586c1-e5ce-4f57-95b3-cf4d8419e0f7",
+              "name": "Unauthorized — invalid or missing public API key",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "{{publicApiKey}}",
+                      "key": "publicApiKey",
+                      "description": "Your Koala workspace public API key"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"string\",\n  \"code\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7de0eb55-9f37-4ffa-b72c-9bd6c043d85a",
+              "name": "Too many requests — rate limit exceeded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "{{publicApiKey}}",
+                      "key": "publicApiKey",
+                      "description": "Your Koala workspace public API key"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"string\",\n  \"code\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Your Koala workspace public API key",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "my-public-api-key",
+      "key": "publicApiKey"
+    },
+    {
+      "type": "string",
+      "value": "https://api2.getkoala.com/web/projects/{{publicApiKey}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "400a13f8-cb89-4f2b-9d24-dedd17b88cfa",
+    "name": "Koala Server-Side Account Ingestion Profile Ingestion API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala's intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.\n\n\nContact Support:\n Name: Koala Developer Docs",
+      "type": "text/plain"
+    }
+  }
+}

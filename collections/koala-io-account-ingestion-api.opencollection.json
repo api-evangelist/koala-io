@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala Server-Side Account Ingestion API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Account Ingestion",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send account-level batch events and traits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/{publicApiKey}/accounts/batch",
+            "params": [
+              {
+                "name": "publicApiKey",
+                "value": "",
+                "type": "path",
+                "description": "Your Koala workspace public API key"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Ingests a batch of identify calls (traits) and/or events associated with a company account rather than an individual visitor. Each request must include either an `account_id` or `domain`. Koala will create a new Account automatically if the domain has not been tracked before. Use the optional `group_id` inside each identify to disambiguate multiple tenants sharing the same domain.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

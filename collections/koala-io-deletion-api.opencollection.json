@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala Accounts Deletion API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Deletion",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Request GDPR deletion for a set of emails",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/api/v1/deletion-requests",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Queues a right-to-erasure deletion for up to 50 email addresses (extra emails beyond the first 50 are ignored). Returns a `deletion_request_id` used to poll status. Authenticated with a secret API key via `Authorization: Bearer sk_...`."
+        },
+        {
+          "info": {
+            "name": "Check GDPR deletion status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api2.getkoala.com/api/v1/deletion-requests/:deletionRequestId",
+            "params": [
+              {
+                "name": "deletionRequestId",
+                "value": "",
+                "type": "path",
+                "description": "The id returned by createDeletionRequest."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the status and, once completed, the deletion receipt for a previously created deletion request. Authenticated with the same secret API key."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

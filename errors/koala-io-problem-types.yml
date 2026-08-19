@@ -1,0 +1,112 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/ 4xx responses + https://getkoala.com/docs/developer-guides/server-side +
+  https://getkoala.com/docs/developer-guides/gdpr-endpoint + live probe of
+  api2.getkoala.com on 2026-08-13
+format: vendor-json
+rfc9457: false
+envelope:
+  media_type: application/json
+  shape:
+    error: Human-readable error message (string)
+    code: Machine-readable error code (string)
+  note: >-
+    Koala returns a flat JSON object, not RFC 9457 application/problem+json. There is
+    no `type` URI, no `title`, no `instance` and no published registry of `code`
+    values, so an agent cannot branch on anything but the HTTP status and free text.
+docs_error_reference: null
+docs_error_reference_note: >-
+  Koala publishes no error-code reference page. Everything below is derived from the
+  OpenAPI responses in this repo and from the constraints stated in prose in the
+  server-side and GDPR guides.
+problems:
+- status: 400
+  code: null
+  title: Missing required identifier or malformed payload
+  detail: >-
+    A /batch request must carry a top-level `profile_id` or `email`; an
+    /accounts/batch request must carry a top-level `domain` or `account_id`.
+  remediation: >-
+    Send `profile_id` (UUID v4 read from the `ko_id` cookie) or `email` for profile
+    batches; send `domain` (preferred) or `account_id` for account batches.
+  source_operation:
+  - openapi/koala-io-profile-ingestion-api-openapi.yml#sendProfileBatch
+  - openapi/koala-io-account-ingestion-api-openapi.yml#sendAccountBatch
+  - openapi/koala-io-collection-api-openapi.yml#collectBatch
+  - openapi/koala-io-accounts-api-openapi.yml#collectAccountBatch
+- status: 400
+  code: null
+  title: Batch entry limit exceeded
+  detail: >-
+    A single /batch request may carry at most 30 events, 30 identifies and 30
+    page_views, and every entry must belong to the same person.
+  remediation: Split the payload into multiple requests, one person per request.
+  source_operation:
+  - openapi/koala-io-profile-ingestion-api-openapi.yml#sendProfileBatch
+  source_docs: https://getkoala.com/docs/developer-guides/server-side
+- status: 401
+  code: null
+  title: Invalid or missing API key
+  detail: >-
+    The collection endpoints embed the workspace PUBLIC project key in the URL path;
+    the Deletion API requires `Authorization: Bearer sk_...` with a SECRET key created
+    in Settings -> API Keys.
+  remediation: >-
+    Check you are using the right key for the right half of the API — a public
+    project key will not authenticate the Deletion API and a secret key is not used
+    by the collection endpoints.
+  source_operation:
+  - openapi/koala-io-profile-ingestion-api-openapi.yml#sendProfileBatch
+  - openapi/koala-io-account-ingestion-api-openapi.yml#sendAccountBatch
+  - openapi/koala-io-deletion-api-openapi.yml#createDeletionRequest
+  - openapi/koala-io-deletion-api-openapi.yml#getDeletionRequest
+- status: 404
+  code: null
+  title: Unknown deletion request id
+  detail: The deletion_request_id in the path does not exist in this workspace.
+  remediation: Use the `deletion_request_id` returned by createDeletionRequest.
+  source_operation:
+  - openapi/koala-io-deletion-api-openapi.yml#getDeletionRequest
+- status: 404
+  code: null
+  title: Unknown or disabled project key
+  detail: The public project key in the path does not resolve to an active workspace.
+  remediation: Copy the key from Settings -> Install in the Koala app.
+  source_operation:
+  - openapi/koala-io-sdk-api-openapi.yml#getProjectBootstrap
+- status: 429
+  code: null
+  title: Too many requests
+  detail: Rate limit exceeded on the ingestion endpoints.
+  remediation: Back off exponentially with jitter and honour Retry-After.
+  source_operation:
+  - openapi/koala-io-profile-ingestion-api-openapi.yml#sendProfileBatch
+  - openapi/koala-io-account-ingestion-api-openapi.yml#sendAccountBatch
+  note: >-
+    Koala documents no numeric rate limit; see rate-limits/koala-io-rate-limits.yml.
+silent_failures:
+- condition: Request sent without a `User-Agent` header
+  observed_status: 200
+  behaviour: >-
+    The docs state a request with no User-Agent "may be flagged as a bot and not
+    processed". There is no error — the batch is accepted and silently discarded.
+  source_docs: https://getkoala.com/docs/developer-guides/server-side
+  agent_impact: >-
+    This is the most dangerous failure mode in the API for an autonomous client: a
+    2xx that means nothing was stored.
+operational_errors_observed:
+- status: 400
+  body: '{"error": "Koala ingest suspended"}'
+  host: api2.getkoala.com, api.getkoala.com
+  observed: '2026-08-13'
+  note: >-
+    Not a documented error. Returned for every path on the ingest hosts because the
+    product is winding down (shutdown 2026-09-30). It reuses the same flat
+    {"error": ...} envelope as a validation failure, with no distinguishing `code`,
+    so a client cannot tell "your payload was wrong" from "this API no longer exists".
+- status: 530
+  body: Cloudflare error 1016 (origin DNS failure)
+  host: app.getkoala.com
+  observed: '2026-08-13'
+  note: The Deletion (GDPR) API host is unreachable.

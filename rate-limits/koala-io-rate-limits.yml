@@ -4,8 +4,18 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Koala
 providerId: koala-io
 created: '2026-07-01'
-modified: '2026-07-01'
-reconciled: false
+modified: '2026-08-13'
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://getkoala.com/docs/developer-guides/server-side +
+  https://getkoala.com/docs/developer-guides/gdpr-endpoint +
+  https://getkoala.com/pricing (plan comparison table) — docs read from the public
+  source repo https://github.com/getkoala/docs and the Mintlify origin
+  https://koala.mintlify.app because https://getkoala.com/docs returned HTTP 429 /
+  Cloudflare 1027 on 2026-08-13
+reconciled: true
+limit_count: 10
 tags:
 - Buyer Intent
 - Ingestion
@@ -13,69 +23,144 @@ tags:
 - Quotas
 - Throttling
 description: >-
-  Koala does not publish numeric request-per-second rate limits for its
-  collection endpoints. The documented constraints are payload-shape limits on
-  the /batch and /accounts/batch endpoints rather than throttling thresholds:
-  each request may carry at most 30 events, 30 identifies, and 30 page_views,
-  every event in a request must belong to the same person, and each request must
-  include a top-level profile_id/email (or domain/account_id for accounts) plus
-  a User-Agent header or it may be dropped as bot traffic. The Deletion (GDPR)
-  API caps each request at 50 emails. Business-level throttling is expressed as
-  plan quotas (identified-visitor volume and enrichment credits) rather than
-  per-minute request ceilings.
+  Koala publishes NO numeric request-per-second or per-minute rate limit for any
+  endpoint, and returns NO rate-limit response headers. The documented constraints are
+  payload-shape caps on /batch and /accounts/batch (30 events, 30 identifies, 30
+  page_views per request, one person per request), a 50-email cap on the deletion
+  endpoint, and plan-level monthly quotas (credits, webhooks, alerts, automated
+  outbound). Throttling is expressed commercially rather than in the protocol.
 notes: >-
-  No RPM/RPS/TPM values are documented. Confirm any hard request throttles and
-  per-plan visitor/credit quotas with Koala during reconciliation. Requests
-  missing a User-Agent are treated as bots and silently discarded.
+  An agent gets no runtime backpressure signal from this API. The OpenAPI declares a
+  429 on the ingestion operations, but no RateLimit-* / X-RateLimit-* headers and no
+  Retry-After are documented, so a client cannot know its remaining budget or when to
+  retry except by backing off blindly. Separately: a request missing a User-Agent
+  header is accepted with 200 and then silently discarded as bot traffic — a failure
+  mode that is invisible to any retry policy.
 sources:
 - https://getkoala.com/docs/developer-guides/server-side
 - https://getkoala.com/docs/developer-guides/gdpr-endpoint
+- https://getkoala.com/pricing
 - https://getkoala.com/docs/admin-guides/credits-faq
 responseCodes:
   throttled: 429
+responseHeaders:
+  published: false
+  headers: []
+  retry_after: not documented
+  note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header is documented anywhere in the
+    Koala docs, and none could be observed live because api2.getkoala.com returns
+    HTTP 400 {"error": "Koala ingest suspended"} on every path as of 2026-08-13.
 limits:
 - name: Events per request
   scope: request
   metric: events
   limit: 30
+  window: per request
   notes: /batch and /accounts/batch accept up to 30 events per request.
 - name: Identifies per request
   scope: request
   metric: identifies
   limit: 30
-  notes: Up to 30 identify objects per /batch request.
+  window: per request
+  notes: Up to 30 identify objects per /batch or /accounts/batch request.
 - name: Page views per request
   scope: request
   metric: page_views
   limit: 30
-  notes: Up to 30 page_view objects per /batch request.
+  window: per request
+  notes: Up to 30 page_view objects per /batch request. Not available on /accounts/batch.
 - name: Same-person constraint
   scope: request
   metric: profiles
   limit: 1
+  window: per request
   notes: All events/identifies in a single /batch request must belong to one person.
 - name: Emails per deletion request
   scope: request
   metric: emails
   limit: 50
-  notes: Deletion API ignores emails beyond the first 50 in a request.
-- name: Identified visitor volume
-  scope: account
-  metric: visitors
-  limit: see plan
-  notes: Gated by subscription tier rather than a per-minute request limit.
+  window: per request
+  notes: >-
+    The Deletion API silently ignores emails beyond the first 50 in a request — it
+    does not reject the request.
 - name: Enrichment credits
   scope: account
   metric: credits
-  limit: see plan
+  limit: plan
+  window: month
+  tiers:
+    free: 100
+    starter: 1000
+    growth: 5000
+    business: custom
   notes: Reveal/Enrich and ZoomInfo enrichment consume plan credits.
+- name: Included seats
+  scope: account
+  metric: seats
+  limit: plan
+  window: month
+  tiers:
+    free: 2
+    starter: 2
+    growth: 3
+    business: custom
+  notes: Additional seats purchasable on Starter and above.
+- name: Automation webhooks
+  scope: account
+  metric: webhooks
+  limit: 1000
+  window: month
+  notes: >-
+    "1k webhooks/mo" is published in the Workflow Automation section of the plan
+    comparison table on paid tiers. The table is rendered column-major, so per-tier
+    attribution below Growth could not be read with confidence — recorded as a
+    published paid-tier quota.
+  confidence: medium
+- name: Slack alerts
+  scope: account
+  metric: alerts
+  limit: 250
+  window: month
+  notes: >-
+    "250 Alerts / mo" published in the plan comparison table. Same column-attribution
+    caveat as the webhook quota.
+  confidence: medium
+- name: Automated outbound actions
+  scope: account
+  metric: actions
+  limit: 100
+  window: month
+  notes: >-
+    "100/mo" published against automated outbound in the plan comparison table. Same
+    column-attribution caveat.
+  confidence: medium
+- name: Data retention
+  scope: account
+  metric: months
+  limit: plan
+  window: rolling
+  tiers:
+    free: 1
+    starter: 1
+    growth: 3
+    business: custom
+  notes: >-
+    Not a rate limit but the hardest ceiling in the product — on Free and Starter,
+    collected data is only retained one month.
 policies:
 - name: User-Agent Required
-  description: Requests without a User-Agent header may be flagged as bots and dropped.
+  description: >-
+    Requests without a User-Agent header may be flagged as bots and dropped. The
+    response is still 200; there is no error and no counter.
 - name: Idempotency
-  description: Send a message_id per event to dedupe replayed/retried deliveries.
+  description: >-
+    Send a message_id per event to dedupe replayed/retried deliveries. identifies[]
+    and page_views[] have no dedupe key.
 - name: Backoff Strategy
-  description: Clients should implement exponential backoff with jitter and honor Retry-After on 429.
+  description: >-
+    No published guidance. Clients should implement exponential backoff with jitter
+    on 429 and treat Retry-After as absent.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

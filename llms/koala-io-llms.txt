@@ -1,0 +1,92 @@
+# Koala
+
+## Docs
+
+- [What is Koala?](https://getkoala.com/docs/get-started/what-is-koala.md): A brief introduction to the Koala platform.
+- [How Koala works](https://getkoala.com/docs/get-started/how-koala-works.md): An introduction to how Koala does its magic.
+- [Quick start](https://getkoala.com/docs/get-started/quick-start.md): A step-by-step guide to get Koala set up in under an hour.
+- [Explore KoalaU](https://getkoala.com/docs/rep-guides/explore-koalau.md): Guides for sellers have moved to KoalaU
+- [Sending Identify Calls](https://getkoala.com/docs/developer-guides/sending-identify.md): An introduction to identify calls into Koala
+- [First intent signals](https://getkoala.com/docs/admin-guides/first-intent-signals.md): This guide walks you through our most common starting intent signals
+- [Advanced Intent Signals](https://getkoala.com/docs/admin-guides/advanced-intent-signals.md): Once you've gotten the hang of basic intent signals, we recommend setting up these advanced intent signals to find your very hottest leads!
+- [How to drive more known users](https://getkoala.com/docs/admin-guides/how-to-drive-more-known-users.md): If you are seeing a lot of anonymous profiles and would like to drive more known usage, this is the guide for you!
+- [Larger sales teams](https://getkoala.com/docs/admin-guides/larger-sales-teams.md): This guide walks through a scaled rollout of Koala to larger sales teams.
+- [SAML SSO](https://getkoala.com/docs/admin-guides/saml-sso.md): How to setup your SAML SSO integration with Koala
+- [Credits FAQ](https://getkoala.com/docs/admin-guides/credits-faq.md): Frequently asked questions about credit consumption and usage in Koala.
+- [Use Koala with Next.js](https://getkoala.com/docs/developer-guides/install-on-nextjs.md): Learn how to use Koala to uncover visitor intent happening on your Next.js application.
+- [Server Side Tracking](https://getkoala.com/docs/developer-guides/server-side.md): When you need to integrate Koala with your server-side application.
+- [Using NPM](https://getkoala.com/docs/developer-guides/using-npm.md): How to use Koala's npm packages for instrumentation
+- [Custom proxy setup](https://getkoala.com/docs/developer-guides/custom-proxy-setup.md): How to set up a custom proxy.
+- [GDPR Endpoint](https://getkoala.com/docs/developer-guides/gdpr-endpoint.md): A developer's guide for GDPR deletion via API
+- [Plays](https://getkoala.com/docs/product-manual/koala-plays.md): Encode a signal-based sales strategy and dole it out to the right reps on your team
+- [Audiences](https://getkoala.com/docs/product-manual/audiences.md): Segment your visitors and accounts by almost anything.
+- [Content Reports](https://getkoala.com/docs/product-manual/content-reports.md): Understand what content converts the best
+- [AI Agents](https://getkoala.com/docs/product-manual/ai-agents.md): Learn how to use AI Agents in Koala to automatically research and qualify leads and accounts.
+- [Intent Signals](https://getkoala.com/docs/product-manual/intent-signals.md): Highlight meaningful moments in the customer journey that signify buying intent and deeper product usage.
+- [Intent Scores](https://getkoala.com/docs/product-manual/intent-scores.md): Learn how Koala scores intent from accounts engaging with your product.
+- [Slack Alerts](https://getkoala.com/docs/product-manual/slack-alerts.md): Set up real-time alerts when your prospects are showing buying intent, directly in Slack.
+- [Koala Weekly](https://getkoala.com/docs/product-manual/koala-weekly.md): See the top accounts showing intent, delivered to your inbox every week.
+- [Koala Automations](https://getkoala.com/docs/automations/intro.md): Understand how to leverage Koala Automations to activate your Intent Data.
+- [Slack Alerts](https://getkoala.com/docs/automations/slack-alerts.md): Get notified in Slack when a new intent signal is detected..
+- [Actions](https://getkoala.com/docs/automations/actions.md): Trigger workflows in your CRM, Sales Engagement Platform, or third party tools when a new intent signal is detected.
+- [Getting Started](https://getkoala.com/docs/automations/auto-outbound/intro.md): 2x~5x your opportunity creationg rate by automatically sending an email to a prospect when a new intent signal is detected.
+- [Auto Outbound with Outreach](https://getkoala.com/docs/automations/auto-outbound/outreach.md): Enroll your Auto Outbound Prospects in an Outreach Sequence
+- [Auto Outbound with Salesforce](https://getkoala.com/docs/automations/auto-outbound/salesforce.md): Enroll your Auto Outbound Prospects in a Salesforce Campaign
+- [Auto Outbound with HubSpot](https://getkoala.com/docs/automations/auto-outbound/hubspot.md): Enroll your Auto Outbound Prospects in a HubSpot Sequence
+- [Auto Outbound with Apollo](https://getkoala.com/docs/automations/auto-outbound/apollo.md): Enroll your Auto Outbound Prospects in a List or Sequence
+- [Auto Outbound with Clay](https://getkoala.com/docs/automations/auto-outbound/clay.md): Extend Auto Outbound with Clay tables
+- [Auto Outbound with Webhooks](https://getkoala.com/docs/automations/auto-outbound/webhooks.md): Extend Auto Outbound with Webhooks
+- [Automation Credits](https://getkoala.com/docs/automations/credits.md): Understand how Automation Credits are used.
+- [Koala Identity Layer](https://getkoala.com/docs/identity-layer/intro.md): Understand how to get more identified traffic flowing into Koala
+- [Identify Email Recipients](https://getkoala.com/docs/identity-layer/identify-email-recipients.md): This guide helps ensure your email recipients will be identified in Koala
+- [Install Koala](https://getkoala.com/docs/sdk/installation.md): Learn how to install the Koala JavaScript SDK.
+- [Identify visitors](https://getkoala.com/docs/sdk/identify.md): Learn how to identify visitors with the Koala SDK.
+- [Send events](https://getkoala.com/docs/sdk/track.md): Learn how to capture key events with the Koala JavaScript SDK.
+- [Autotracking](https://getkoala.com/docs/sdk/autotracking.md): Learn about how the Koala pixel automatically tracks events.
+- [3rd Party Sources](https://getkoala.com/docs/sources/index.md): Sources for enriching customer profiles
+- [Segment](https://getkoala.com/docs/integrations/segment.md): Segment is the easiest way to install Koala. If you've already got Segment running on your website, we recommend this approach. With Segment, you can instrument Koala easily without code.
+- [Snowflake](https://getkoala.com/docs/integrations/snowflake.md): Sync product, usage and event data directly from your data warehouse.
+- [RB2B](https://getkoala.com/docs/integrations/rb2b.md): Person-level identity for web traffic.
+- [BigQuery](https://getkoala.com/docs/integrations/bigquery.md): Sync product, usage and event data directly from your data warehouse.
+- [Mintlify](https://getkoala.com/docs/integrations/mintlify.md): Capture intent signals coming from your Mintlify technical docs.
+- [ReadMe](https://getkoala.com/docs/integrations/readme.md): Capture intent signals coming from your ReadMe technical docs.
+- [LinkedIn Chrome Extension](https://getkoala.com/docs/integrations/linkedin-chrome-extension.md): Track people reacting and commenting on LinkedIn posts.
+- [GitHub](https://getkoala.com/docs/integrations/github.md): Capture signals from people interacting with any public GitHub repo.
+- [Slack Community](https://getkoala.com/docs/integrations/slack-community.md): Track sales signals in your Slack communities.
+- [Discord](https://getkoala.com/docs/integrations/discord.md): Track activity in your Discord communities.
+- [Discourse](https://getkoala.com/docs/integrations/discourse.md): Track participants engaging with your Discourse community.
+- [Apollo](https://getkoala.com/docs/integrations/apollo.md): Koala partners with Apollo to enrich email addresses, search for prospects, and take action using Apollo's sales engagement offering.
+- [Arcade](https://getkoala.com/docs/integrations/arcade.md): Capture events coming from Arcade interactive tours.
+- [Calendly](https://getkoala.com/docs/integrations/calendly.md): Capture events coming from your embedded Calendly booking.
+- [Census](https://getkoala.com/docs/integrations/census.md): Koala partners with Census to pull product consumption data and other critical warehouse data into Koala.
+- [Clay](https://getkoala.com/docs/integrations/clay.md): Send data to Clay via webhooks from Koala's Actions and Auto Outbound frameworks
+- [Clearbit](https://getkoala.com/docs/integrations/clearbit.md): Koala partners with Clearbit to power IP to company intelligence using Clearbit Reveal, and person/company enrichment via Clearbit Enrich.
+- [Drift](https://getkoala.com/docs/integrations/drift.md): Capture events and identify users from Drift chat widget.
+- [FullStory](https://getkoala.com/docs/integrations/fullstory.md): Link Koala events with FullStory session recordings.
+- [G2](https://getkoala.com/docs/integrations/g2.md): Connect G2 to sync buyer intent data into Koala
+- [GitBook](https://getkoala.com/docs/integrations/gitbook.md): Capture intent signals coming from your GitBook technical docs.
+- [Google Tag Manager](https://getkoala.com/docs/integrations/google-tag-manager.md)
+- [Hightouch](https://getkoala.com/docs/integrations/hightouch.md): Koala partners with Hightouch to pull product consumption data and other critical warehouse data into Koala.
+- [HubSpot](https://getkoala.com/docs/integrations/hubspot.md): Connect HubSpot's CRM to see HubSpot Companies, Deals, and Contacts in Koala. Optionally, write intent signals back to HubSpot.
+- [HubSpot Meetings](https://getkoala.com/docs/integrations/hubspot-meetings.md): Capture events from HubSpot Meetings scheduling.
+- [Intercom](https://getkoala.com/docs/integrations/intercom.md): Identify users from Intercom messenger.
+- [Navattic](https://getkoala.com/docs/integrations/navattic.md): Capture events coming from Navattic interactive demos.
+- [Outreach](https://getkoala.com/docs/integrations/outreach.md): Koala partners with Outreach to activate your high-intent leads in real-time.
+- [PostHog](https://getkoala.com/docs/integrations/posthog.md): Link Koala events with PostHog session recordings.
+- [Qualified](https://getkoala.com/docs/integrations/qualified.md): Capture events from Qualified's conversational sales platform.
+- [Rudderstack](https://getkoala.com/docs/integrations/rudderstack.md): Koala integrates natively with Rudderstack in the browser.
+- [Salesforce](https://getkoala.com/docs/integrations/salesforce.md): Connect Salesforce's CRM to see Salesforce Accounts, Opportunities, Contacts, and Leads in Koala. Optionally, write intent signals back to Salesforce.
+- [Salesloft](https://getkoala.com/docs/integrations/salesloft.md): Koala partners with Salesloft to activate your high-intent leads in real-time.
+- [Slack](https://getkoala.com/docs/integrations/slack.md): Use the Koala app to get notified about new leads as soon as they express intent in your product.
+- [Storylane](https://getkoala.com/docs/integrations/storylane.md): Capture events coming from Storylane interactive demos.
+- [ZoomInfo](https://getkoala.com/docs/integrations/zoominfo.md): Koala partners with ZoomInfo to power contact enrichment via API.
+
+## OpenAPI Specs
+
+- [package](https://getkoala.com/docs/package.json)
+- [package-lock](https://getkoala.com/docs/package-lock.json)
+
+## Optional
+
+- [Changelog](https://getkoala.com/blog?type=product-updates)
+- [Status](https://koala.instatus.com)

@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala Server-Side Account Ingestion Profile Ingestion API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Profile Ingestion",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send profile-level batch events, identifies, and page views",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/{publicApiKey}/batch",
+            "params": [
+              {
+                "name": "publicApiKey",
+                "value": "",
+                "type": "path",
+                "description": "Your Koala workspace public API key"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Ingests a batch of events, identify calls, and/or page views tied to a single profile (visitor). Each request must include either a `profile_id` (UUID v4 read from the `ko_id` cookie) or an `email`. A maximum of 30 entries each of events, identifies, and page_views per request is enforced. All entries in a single request must belong to the same person.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

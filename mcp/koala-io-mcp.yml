@@ -1,0 +1,84 @@
+generated: '2026-08-13'
+method: probed
+status: published
+source: https://koala.mintlify.app/mcp
+deployment:
+  mode: remote
+  endpoint: https://koala.mintlify.app/mcp
+  auth: none
+  verified: probed
+server:
+  name: koala-docs
+  transport: http
+  protocol: JSON-RPC 2.0 over HTTP (Streamable HTTP, text/event-stream responses)
+  url: https://koala.mintlify.app/mcp
+  scope: documentation
+  vendor: Mintlify
+  vendor_note: >-
+    This is the Mintlify-generated documentation MCP server for Koala's own docs
+    project (the origin behind https://getkoala.com/docs). It exposes Koala's
+    documentation to agents; it does NOT expose the Koala Collection, Accounts or
+    Deletion APIs. Koala publishes no MCP server for its data-plane APIs.
+  canonical_path_note: >-
+    https://getkoala.com/docs/mcp is the customer-domain path for the same server but
+    returned HTTP 429 / Cloudflare error 1027 on 2026-08-13 during the product
+    wind-down; the .mintlify.app origin answered normally.
+probe:
+  request: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 200
+  content_type: text/event-stream
+  authenticated: false
+  tools_returned: 3
+  raw: koala-io-tools-list.json
+tools:
+- name: search_koala
+  title: Search documentation
+  description: >-
+    Search across the Koala knowledge base to find relevant information, code
+    examples, API references, and guides.
+  input_schema:
+    query: string (required) — Search query
+  annotations:
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: true
+    openWorldHint: false
+  source_operation: null
+- name: query_docs_filesystem_koala
+  title: null
+  description: >-
+    Run a read-only shell-like query (rg/grep/find/tree/ls/cat/head/tail/jq and
+    friends) against a virtualized in-memory filesystem containing only the Koala
+    documentation pages. Stateless per call; no network, no writes.
+  input_schema:
+    command: string (required) — the read-only shell-like command to run
+  annotations:
+    readOnlyHint: true
+    destructiveHint: false
+    idempotentHint: true
+    openWorldHint: false
+  source_operation: null
+- name: submit_feedback
+  title: Submit documentation feedback
+  description: Submit feedback about a Koala documentation page.
+  input_schema:
+    path: string (required) — documentation page path
+    feedback: string (required) — the feedback text
+  annotations:
+    readOnlyHint: false
+    destructiveHint: false
+    idempotentHint: false
+    openWorldHint: true
+  source_operation: null
+coverage:
+  tools_total: 3
+  tools_bound_to_rest: 0
+  note: >-
+    Every tool is a documentation tool. None maps to a Koala REST operation, so the
+    crosswalk records all three as mcp_only and all six OpenAPI operations as
+    rest_only. See mcp/koala-io-tool-crosswalk.yml.
+x-evidence:
+  fetched: '2026-08-13'
+  url: https://koala.mintlify.app/mcp
+  http_status: 200
+  method: POST tools/list

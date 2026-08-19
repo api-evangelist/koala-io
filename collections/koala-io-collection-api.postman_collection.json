@@ -1,0 +1,213 @@
+{
+  "item": [
+    {
+      "id": "d4868a3e-f9fc-4384-aa12-c860b2ced528",
+      "name": "Collection",
+      "description": {
+        "content": "Server-side ingestion of visitor identifies, events, and traits.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "715b750c-fb12-4cb8-96a6-354e2c01aa34",
+          "name": "Ingest visitor identifies, events, and traits",
+          "request": {
+            "name": "Ingest visitor identifies, events, and traits",
+            "description": {
+              "content": "Sends a batch of visitor-level data to Koala. The request body MUST include a top-level `profile_id` (from the `ko_id` cookie) or `email` so the payload can be attached to a visitor. Each of `events` and `identifies` is limited to 30 entries per request, and every event in a single request must belong to the same person. A `User-Agent` header is required or the request may be dropped as bot traffic. Authenticated by the public project key in the path.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "web",
+                "projects",
+                ":publicApiKey",
+                "batch"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "publicApiKey",
+                  "description": "(Required) The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.",
+                "key": "User-Agent",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "92fbd769-0186-487e-8292-1dddf550d939",
+              "name": "Batch accepted for processing.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "web",
+                    "projects",
+                    ":publicApiKey",
+                    "batch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "publicApiKey",
+                      "description": "(Required) The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "(Required) Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.",
+                    "key": "User-Agent",
+                    "value": "your-company-name/1.0.0"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": true,\n  \"key_1\": 6340\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ab01c720-6bba-4143-97f8-507b11894d81",
+              "name": "Missing profile_id/email or malformed payload.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "web",
+                    "projects",
+                    ":publicApiKey",
+                    "batch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "publicApiKey",
+                      "description": "(Required) The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "(Required) Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.",
+                    "key": "User-Agent",
+                    "value": "your-company-name/1.0.0"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"profile_id\": \"3e6a2c18-3b02-40c4-b8d2-1842c193d3ba\",\n  \"email\": \"person@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api2.getkoala.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "8ddb3796-8492-4f41-a846-6e8c55ad1089",
+    "name": "Koala Accounts Collection API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Koala's developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:\n\n1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.\n\n2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.\n\nVisitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.\n\nContact Support:\n Name: Koala Support\n Email: support@getkoala.com",
+      "type": "text/plain"
+    }
+  }
+}

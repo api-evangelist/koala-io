@@ -1,15 +1,60 @@
-generated: '2026-07-11'
+generated: '2026-08-13'
 method: searched
 probe: true
 source: https://getkoala.com/security
-url: https://getkoala.com/security
+url: https://app.vanta.com/koala/trust/tzb87epi5imm1qbxktj0bn
+url_status: 200
+url_note: >-
+  Koala's trust center is hosted on Vanta and linked from https://getkoala.com/security.
+  Upgraded on 2026-08-13 from the previous pass, which recorded only the marketing
+  security page.
 certifications:
-- SOC 2
-- GDPR
+- name: SOC 2 Type II
+  status: maintained
+  quote: >-
+    "Koala earned its first SOC 2 compliance certificate about six months after its
+    first line of code was written and maintains SOC 2 Type II."
+  evidence: https://getkoala.com/security
+- name: GDPR
+  status: compliant (self-attested)
+  quote: >-
+    "Koala is compliant with the General Data Protection Regulation (GDPR) and
+    California Consumer Privacy Act (CCPA)."
+  evidence: https://getkoala.com/security
+- name: CCPA
+  status: compliant (self-attested)
+  evidence: https://getkoala.com/security
+not_claimed:
+- ISO 27001
+- HIPAA
+- PCI DSS
+- FedRAMP
+controls_published:
+- name: Third-party penetration testing
+  cadence: annual
+- name: External code audits
+- name: SSO
+  detail: Google sign-in or magic links
+- name: SAML SSO
+  detail: via Okta, on the Business plan
+  docs: https://getkoala.com/docs/admin-guides/saml-sso
+- name: Password login can be disabled
+data_processing:
+  dpa: available on request (custom DPA)
+  subprocessor_list_published: false
+  gdpr_erasure_api: https://getkoala.com/docs/developer-guides/gdpr-endpoint
+  gdpr_erasure_api_status: >-
+    Documented at https://app.getkoala.com/api/v1/deletion-requests, but that host
+    returned HTTP 530 (Cloudflare 1016, origin DNS failure) on 2026-08-13 — the
+    erasure channel is currently unreachable.
 evidence:
 - source: https://getkoala.com/security
-  keywords:
-  - soc 2
-  - soc2
-  - trust center
-  - gdpr
+  status: 200
+  fetched: '2026-08-13'
+  keywords: [soc 2, soc 2 type ii, gdpr, ccpa, penetration testing, saml, sso, dpa]
+- source: https://app.vanta.com/koala/trust/tzb87epi5imm1qbxktj0bn
+  status: 200
+  fetched: '2026-08-13'
+lifecycle_warning: >-
+  Koala was acquired by Cursor and shuts down 2026-09-30. Certifications and the trust
+  center are published as of this probe but should not be relied on past that date.

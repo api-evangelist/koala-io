@@ -1,0 +1,47 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala Accounts API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Accounts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Ingest account (company) traits and events",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/:publicApiKey/accounts/batch",
+            "headers": [
+              {
+                "name": "User-Agent",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "publicApiKey",
+                "value": "",
+                "type": "path",
+                "description": "The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends account-level firmographic traits and/or account events tied to a company `domain` (recommended) or Koala `account_id`. An optional `group_id` disambiguates multiple tenants/workspaces that map to the same domain. Koala auto-creates the account if the domain has not been seen. Authenticated by the public project key in the path."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

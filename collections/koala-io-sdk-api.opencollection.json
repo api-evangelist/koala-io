@@ -1,0 +1,37 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala Accounts SDK API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "SDK",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get SDK bootstrap configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api2.getkoala.com/web/projects/:publicApiKey",
+            "params": [
+              {
+                "name": "publicApiKey",
+                "value": "",
+                "type": "path",
+                "description": "The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+              }
+            ]
+          },
+          "docs": "Returns the JSON configuration the browser pixel needs to initialize for this workspace. Also useful to verify that a public key or a custom reverse-proxy install resolves correctly (a valid key returns a JSON response)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

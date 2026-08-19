@@ -1,0 +1,60 @@
+generated: '2026-08-13'
+method: searched
+source: https://getkoala.com/docs/automations/auto-outbound/webhooks
+spec_type: none
+asyncapi_published: false
+asyncapi_note: >-
+  Koala publishes no AsyncAPI document. Searches of https://github.com/getkoala
+  (14 public repos), the public docs source repo https://github.com/getkoala/docs
+  (214 files, no spec of any kind) and /asyncapi.yaml on getkoala.com,
+  api2.getkoala.com and koala.mintlify.app all missed. Nothing was fabricated.
+event_surface:
+  exists: true
+  form: outbound HTTP webhook configured in the Koala app
+  direction: Koala -> customer endpoint
+  transport: HTTPS POST
+  configuration: >-
+    Paste a destination URL into the Webhooks destination field of an Auto Outbound
+    automation. There is no API to register, list, rotate or delete a webhook.
+  delivery_guarantees: not published
+  retries: not published
+  signing: not published
+  secret_verification: not published
+  replay: not published
+webhooks:
+- name: auto-outbound.prospect.eligible
+  name_note: >-
+    DERIVED LABEL — Koala does not publish an event name or type field. Named here
+    only so the row is addressable; do not treat it as a wire value.
+  trigger: A new prospect becomes eligible for an Auto Outbound audience.
+  payload_documented: partial
+  payload_contents:
+  - Account
+  - Intent Signal
+  - Visitor
+  payload_schema: null
+  payload_note: >-
+    The docs describe the payload only as "a message ... containing the Account,
+    Intent Signal, and Visitor that triggered the Intent Signal". No field list, no
+    JSON example, no schema. A test delivery can be fired from the Audience Preview
+    card ("Send Test") in the app, which is the only way to learn the real shape.
+  source: https://getkoala.com/docs/automations/auto-outbound/webhooks
+related_outbound_destinations:
+  note: >-
+    Auto Outbound also has first-class destinations for Apollo, Clay, HubSpot,
+    Outreach and Salesforce; the generic webhook exists as the escape hatch for
+    everything else. Slack alerts and the Koala Weekly digest are separate
+    notification channels, not webhooks.
+  docs:
+  - https://getkoala.com/docs/automations/auto-outbound/intro
+  - https://getkoala.com/docs/automations/actions
+gaps:
+- No event catalog or event-type registry.
+- No payload schema or example payload.
+- No signature/verification scheme documented, so a receiver cannot authenticate deliveries.
+- No retry or ordering guarantees documented.
+- No API to manage webhook endpoints — UI only.
+lifecycle_warning: >-
+  Koala was acquired by Cursor and shuts down 2026-09-30; the ingest hosts were
+  already returning {"error": "Koala ingest suspended"} when this was probed on
+  2026-08-13, so it is unlikely any webhook is still firing.

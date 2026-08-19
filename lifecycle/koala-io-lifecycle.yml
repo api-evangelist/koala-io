@@ -1,0 +1,118 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://getkoala.com/ (site-wide shutdown banner) +
+  https://getkoala.com/pricing + https://getkoala.com/security +
+  live probes of api2.getkoala.com, api.getkoala.com, app.getkoala.com,
+  cdn.getkoala.com, proxy.getkoala.com and getkoala.com/docs
+status: sunsetting
+headline: >-
+  Koala has been acquired by Cursor (Anysphere) and the product shuts down on
+  2026-09-30. The ingestion API is already returning
+  {"error": "Koala ingest suspended"} and the application host is dark.
+end_of_life:
+  announced: true
+  announcement: >-
+    Site-wide banner on every getkoala.com page: "Koala has been acquired by Cursor
+    and will be shutting down on Sept 30", linking to
+    https://getkoala.com/blog/koala-cursor
+  announcement_url: https://getkoala.com/blog/koala-cursor
+  announcement_url_status: 404
+  announcement_url_note: >-
+    The banner's own destination returns 404 as of 2026-08-13 — the blog backend is
+    down along with the rest of the wind-down. The banner text on the live pages is
+    the surviving primary evidence.
+  shutdown_date: '2026-09-30'
+  acquirer: Cursor (Anysphere)
+  legal_entity: Konfetti, Inc.
+  migration_path: none published
+  data_export_path: none published
+observed_decay:
+  probed: '2026-08-13'
+  surfaces:
+  - surface: Collection / Accounts ingestion API
+    host: https://api2.getkoala.com
+    http_status: 400
+    body: '{"error": "Koala ingest suspended"}'
+    note: >-
+      Returned on EVERY path including the documented /web/projects/{key}/batch and
+      /web/projects/{key}/accounts/batch. The data plane is already off.
+  - surface: Ingest alias
+    host: https://api.getkoala.com
+    http_status: 400
+    body: '{"error": "Koala ingest suspended"}'
+  - surface: Application + Deletion (GDPR) API
+    host: https://app.getkoala.com
+    http_status: 530
+    note: >-
+      Cloudflare error 1016 (origin DNS failure) on every path including the host
+      root, /login and /signup. The GDPR right-to-erasure endpoint documented at
+      https://app.getkoala.com/api/v1/deletion-requests is therefore unreachable —
+      the erasure channel went dark before the announced shutdown date.
+  - surface: Pixel CDN
+    host: https://cdn.getkoala.com
+    http_status: 429
+    note: Cloudflare error 1027 on every path, including /v1/{key}/sdk.js.
+  - surface: Reverse-proxy origin
+    host: https://proxy.getkoala.com
+    http_status: 429
+    note: Cloudflare error 1027. Customers running the documented custom-proxy setup are affected.
+  - surface: Documentation
+    host: https://getkoala.com/docs
+    http_status: 429
+    note: >-
+      Cloudflare error 1027 on every docs path. The docs are still readable at the
+      Mintlify origin https://koala.mintlify.app and in the public source repo
+      https://github.com/getkoala/docs.
+  - surface: Blog / changelog
+    host: https://getkoala.com/blog
+    http_status: 404
+    note: >-
+      /blog, /blog?type=product-updates (the changelog anchor published in the docs
+      config) and /rss/changelog.xml all 404. No ChangeLog pointer is emitted for
+      this provider because the changelog it advertises no longer resolves.
+  - surface: Marketing site
+    host: https://getkoala.com
+    http_status: 200
+    note: Homepage, /pricing, /security, /customers, /careers and /legal/* still serve.
+  - surface: Status page
+    host: https://koala.instatus.com
+    http_status: 200
+    note: 'summary.json reports {"status":"UP"} — the status page has not been updated
+      to reflect the suspended ingest.'
+versioning:
+  scheme: uri-path
+  current: v1
+  evidence: >-
+    Collection endpoints are /web/projects/{publicApiKey}/batch (unversioned path,
+    v1 CDN segment for the pixel); the admin API is /api/v1/deletion-requests.
+  policy_url: null
+  policy_published: false
+deprecation:
+  policy_url: https://getkoala.com/
+  policy_published: true
+  policy_form: >-
+    Whole-product end-of-life announced by site-wide banner with a fixed date
+    (2026-09-30). There is no per-endpoint deprecation policy and no versioned
+    deprecation schedule.
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    No Sunset or Deprecation response headers are documented or observable; the
+    ingest host returns a bare 400 JSON error rather than RFC 8594 signalling, so an
+    automated client learns nothing about the shutdown from the wire.
+sla:
+  url: null
+  uptime_target: null
+  published: false
+status_page: https://koala.instatus.com
+status_page_status: 200
+support:
+  email: support@getkoala.com
+  source: openapi/_original/koala-io-openapi.yml info.contact + docs
+deprecated_operations: []
+deprecated_operations_note: >-
+  No operation in any openapi/ document carries `deprecated: true`. The deprecation
+  here is product-level, not operation-level — which is precisely why an agent
+  reading only the specs would still believe every operation is live.

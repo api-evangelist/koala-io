@@ -1,0 +1,47 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Koala Accounts Collection API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Collection",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Ingest visitor identifies, events, and traits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api2.getkoala.com/web/projects/:publicApiKey/batch",
+            "headers": [
+              {
+                "name": "User-Agent",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "publicApiKey",
+                "value": "",
+                "type": "path",
+                "description": "The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends a batch of visitor-level data to Koala. The request body MUST include a top-level `profile_id` (from the `ko_id` cookie) or `email` so the payload can be attached to a visitor. Each of `events` and `identifies` is limited to 30 entries per request, and every event in a single request must belong to the same person. A `User-Agent` header is required or the request may be dropped as bot traffic. Authenticated by the public project key in the path."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

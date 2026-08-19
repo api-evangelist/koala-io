@@ -1,0 +1,116 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/ + https://getkoala.com/security + https://getkoala.com/legal/privacy +
+  https://getkoala.com/docs/admin-guides/saml-sso + live probes 2026-08-13
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: >-
+    All six documents in openapi/ are OpenAPI 3.0.3. NOTE: they are API Evangelist
+    reconstructions from Koala's prose docs — Koala publishes no OpenAPI of its own
+    (github.com/getkoala/docs contains no spec, and /openapi.json misses on every host).
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 securityScheme in any spec; no OAuth documented for the API.
+- id: oidc
+  conforms: partial
+  evidence: >-
+    OIDC is used for END-USER login to the Koala app (Google sign-in; and Koala
+    publishes github.com/getkoala/omniauth-linkedin-openid). It is not used to
+    authorize the API. /.well-known/openid-configuration 404s on every host.
+- id: saml-2.0
+  conforms: true
+  evidence: >-
+    SAML SSO via Okta on the Business plan —
+    https://getkoala.com/docs/admin-guides/saml-sso
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are a flat {"error","code"} JSON object on application/json, not
+    application/problem+json. See errors/koala-io-problem-types.yml.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: >-
+    No Sunset or Deprecation headers, despite an announced 2026-09-30 end-of-life.
+    The suspended ingest returns a bare HTTP 400.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on every Koala host.
+- id: rfc6749-bearer-tokens
+  conforms: partial
+  evidence: >-
+    The Deletion API uses `Authorization: Bearer sk_...` (RFC 6750 header form) but
+    the token is a static secret API key, not an OAuth 2.0 access token.
+- id: a2a-1.0
+  conforms: true
+  evidence: >-
+    Conformant AgentCard served at
+    https://koala.mintlify.app/.well-known/agent-card.json (Mintlify-generated for
+    Koala's docs project). See a2a/koala-io-a2a.yml — capabilities is an object,
+    protocolVersion 0.3 present, skills is an array (empty).
+- id: mcp
+  conforms: true
+  evidence: >-
+    Live Streamable-HTTP MCP server at https://koala.mintlify.app/mcp answering
+    tools/list anonymously with 3 documentation tools. Docs scope only, not the data
+    plane. See mcp/koala-io-mcp.yml.
+- id: llms-txt
+  conforms: true
+  evidence: https://koala.mintlify.app/llms.txt (HTTP 200) — saved to llms/koala-io-llms.txt.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No AsyncAPI document. A webhook surface exists (Auto Outbound) but is documented
+    in prose with no payload schema.
+- id: json-schema-2020-12
+  conforms: true
+  evidence: >-
+    json-schema/koala-io-profile-batch-request-schema.json and
+    koala-io-account-batch-request-schema.json (API Evangelist derived).
+- id: json-api
+  conforms: false
+- id: odata
+  conforms: false
+- id: scim-2.0
+  conforms: false
+- id: fhir-r4
+  conforms: false
+- id: psd2
+  conforms: false
+- id: idempotency
+  conforms: partial
+  evidence: >-
+    Per-event `message_id` acts as an idempotency key on events[], but it is optional
+    and identifies[]/page_views[] have none. No Idempotency-Key header. See
+    conventions/koala-io-conventions.yml.
+- id: pagination
+  conforms: false
+  evidence: No operation returns a collection; there is nothing to page.
+compliance_programs:
+- id: soc2-type-ii
+  conforms: true
+  evidence: https://getkoala.com/security — "maintains SOC 2 Type II"
+  trust_center: https://app.vanta.com/koala/trust/tzb87epi5imm1qbxktj0bn
+- id: gdpr
+  conforms: true
+  evidence: >-
+    Self-attested on https://getkoala.com/security, backed by a documented
+    right-to-erasure API (https://getkoala.com/docs/developer-guides/gdpr-endpoint).
+- id: ccpa
+  conforms: true
+  evidence: https://getkoala.com/security
+- id: iso-27001
+  conforms: false
+- id: hipaa
+  conforms: false
+- id: pci-dss
+  conforms: false
+transport_security:
+  tls: TLSv1.3 on getkoala.com, app.getkoala.com, api2.getkoala.com
+  hsts: false
+  dnssec: true
+  spf: true
+  dmarc: quarantine
+  caa: none published
+  source: security/koala-io-domain-security.yml

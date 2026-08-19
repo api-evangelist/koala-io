@@ -1,0 +1,161 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/ ($ref graph + id-reference fields) enriched from
+  https://getkoala.com/docs/developer-guides/server-side and
+  https://getkoala.com/docs/developer-guides/gdpr-endpoint
+summary: >-
+  Koala's public data model is write-only and has three roots — Profile (a visitor),
+  Account (a company) and DeletionRequest. Profiles and Accounts are never returned
+  by any operation; they are addressed by natural keys (email / domain) or by an
+  opaque id read out of a browser cookie. The only entity the API will read back is
+  the DeletionRequest.
+entities:
+- name: Profile
+  aka: [visitor, person]
+  addressed_by:
+  - field: profile_id
+    format: UUID v4
+    id_source: the `ko_id` first-party cookie set by the Koala pixel
+    domain: browser
+  - field: email
+    format: email
+    domain: natural key
+  readable: false
+  writable: true
+  written_by:
+  - openapi/koala-io-profile-ingestion-api-openapi.yml#sendProfileBatch
+  - openapi/koala-io-collection-api-openapi.yml#collectBatch
+  schema: ProfileBatchRequest
+  note: >-
+    A profile is created implicitly by the first identify/event that names it. Koala
+    merges an anonymous profile into a known one when the same email is identified.
+- name: Account
+  aka: [company, workspace-of-the-customer]
+  addressed_by:
+  - field: domain
+    format: hostname
+    domain: natural key
+    preferred: true
+  - field: account_id
+    format: opaque string
+  readable: false
+  writable: true
+  written_by:
+  - openapi/koala-io-account-ingestion-api-openapi.yml#sendAccountBatch
+  - openapi/koala-io-accounts-api-openapi.yml#collectAccountBatch
+  schema: AccountBatchRequest
+  note: >-
+    Koala auto-creates an Account the first time a `domain` is seen. Traits may be
+    partitioned within one Account by the optional `group_id` trait.
+- name: TrackEvent
+  schema: TrackEvent
+  fields: [message_id, type, event, properties, sent_at]
+  idempotency_key: message_id
+  readable: false
+- name: IdentifyCall
+  schema: IdentifyCall / AccountIdentifyCall
+  fields: [type, sent_at, traits]
+  idempotency_key: null
+  readable: false
+- name: PageView
+  schema: PageView
+  fields: [message_id, type, name, properties, sent_at]
+  readable: false
+  note: Profile-scoped only; accounts have no page_views array.
+- name: Project
+  aka: [workspace]
+  addressed_by:
+  - field: publicApiKey
+    location: URL path
+  readable: true
+  read_by:
+  - openapi/koala-io-sdk-api-openapi.yml#getProjectBootstrap
+  note: The bootstrap document the browser pixel initialises from.
+- name: DeletionRequest
+  addressed_by:
+  - field: deletion_request_id
+    format: UUID v4
+  readable: true
+  writable: true
+  written_by:
+  - openapi/koala-io-deletion-api-openapi.yml#createDeletionRequest
+  read_by:
+  - openapi/koala-io-deletion-api-openapi.yml#getDeletionRequest
+  schema: DeletionRequest / DeletionRequestCreated / DeletionRequestStatus
+  fields: [id, project_id, status, input, deleted_receipt, created_at, updated_at, messages]
+  note: >-
+    The only entity in the public API with a lifecycle you can observe. `status`
+    moves to "completed" and `deleted_receipt` enumerates per-email counts of what
+    was erased, including the enrichment caches (clearbit_reveal_cache,
+    clearbit_enrichment_cache, hubspot_contact_cache, salesforce_contact_caches,
+    outreach_prospect_cache) — the clearest published statement of which third-party
+    stores Koala holds a copy in.
+relationships:
+- from: Profile
+  to: TrackEvent
+  type: has_many
+  via: events[]
+  source: ProfileBatchRequest.events -> TrackEvent
+- from: Profile
+  to: IdentifyCall
+  type: has_many
+  via: identifies[]
+  source: ProfileBatchRequest.identifies -> IdentifyCall
+- from: Profile
+  to: PageView
+  type: has_many
+  via: page_views[]
+  source: ProfileBatchRequest.page_views -> PageView
+- from: Account
+  to: AccountIdentifyCall
+  type: has_many
+  via: identifies[]
+  source: AccountBatchRequest.identifies -> AccountIdentifyCall
+- from: Account
+  to: TrackEvent
+  type: has_many
+  via: events[]
+  source: AccountBatchRequest.events -> TrackEvent
+- from: Account
+  to: Profile
+  type: has_many
+  via: domain (email domain / Clearbit Reveal IP-to-company match)
+  source: docs
+  confidence: medium
+  note: >-
+    Association is inferred by Koala internally, not asserted through the API — there
+    is no operation that links a profile_id to an account_id.
+- from: Project
+  to: Profile
+  type: has_many
+  via: publicApiKey path segment
+- from: Project
+  to: Account
+  type: has_many
+  via: publicApiKey path segment
+- from: DeletionRequest
+  to: Profile
+  type: has_many
+  via: deleted_receipt[].profiles[]
+  note: Resolved from the input emails at execution time.
+- from: DeletionRequest
+  belongs_to: Project
+  type: belongs_to
+  via: project_id
+enrichment_sources_referenced:
+- Clearbit Reveal (IP-to-company de-anonymisation)
+- Clearbit Enrich (person/company firmographics)
+- ZoomInfo
+- HubSpot / Salesforce / Outreach contact caches
+enrichment_note: >-
+  These appear only as cache keys in the deletion receipt. Koala publishes no
+  operation that reads an enriched company, visitor, or intent record; that data is
+  consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census)
+  and outbound automations.
+gaps:
+- No read operation for Profile, Account, IntentSignal, Audience or Play.
+- No list/search operation anywhere in the public surface.
+- No schema for the webhook payload Koala POSTs to customer endpoints
+  (see asyncapi/koala-io-auto-outbound-webhooks.yml).
+render: null

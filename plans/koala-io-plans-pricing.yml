@@ -4,8 +4,12 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Koala
 providerId: koala-io
 created: '2026-07-01'
-modified: '2026-07-01'
-reconciled: false
+modified: '2026-08-13'
+generated: '2026-08-13'
+method: searched
+source: https://getkoala.com/pricing
+reconciled: true
+plan_count: 4
 tags:
 - Buyer Intent
 - Visitor Identification
@@ -13,92 +17,187 @@ tags:
 - Go-to-Market
 - Plans
 description: >-
-  Koala is sold as a seat- and usage-based SaaS product, not as a metered
-  pay-as-you-go API. Access to the pixel and the collection/deletion APIs comes
-  with the workspace subscription; there is no separate per-call API price.
-  Koala offers a free self-serve tier and paid tiers (commonly described as Pro
-  and Enterprise) that gate identified-visitor volume, enrichment credits,
-  seats, automations, and integrations. Public dollar amounts are not
-  consistently published on the pricing page; third-party sources put entry paid
-  pricing in the low hundreds of dollars per month. Treat the amounts below as
-  approximate and unreconciled.
+  Koala is sold as seat- and credit-based SaaS, not as a metered per-call API. Access
+  to the pixel, the collection API and the GDPR deletion API comes with the workspace
+  subscription; there is no separate per-request API price. The published price sheet
+  has four tiers — Free, Starter ($200/mo), Growth ($1,000/mo) and Business (custom) —
+  and every tier includes "all features"; what changes across tiers is included
+  seats, monthly credits, lead-routing sophistication, CRM depth, data retention and
+  support. Prices below were read verbatim off the pricing page on 2026-08-13.
 notes: >-
-  Koala does not publish a fixed price sheet for all tiers; sign-up is
-  self-serve and larger plans are quoted by sales. Enrichment (Clearbit Reveal
-  10k/mo + Enrich 250/mo referenced in docs, plus ZoomInfo) is provisioned as
-  credits rather than billed per API request by Koala. Verify current tiers,
-  limits, and prices on the pricing page during reconciliation.
+  The pricing page carries a site-wide banner: "Koala has been acquired by Cursor and
+  will be shutting down on Sept 30". Signup links were still live at probe time, but
+  the ingestion API was already returning {"error": "Koala ingest suspended"}. Do not
+  treat these tiers as purchasable. Annual billing is offered as a toggle on the page
+  but no annual figures are published separately. Enrichment credits are consumed by
+  Clearbit Reveal/Enrich and ZoomInfo lookups.
 sources:
 - https://getkoala.com/pricing
 - https://getkoala.com/docs/admin-guides/credits-faq
 - https://getkoala.com/docs/automations/credits
 plans:
 - id: koala-free
-  name: Free
+  name: Try for Free
   type: free
-  description: >-
-    Self-serve free tier to install the pixel, de-anonymize traffic, and start
-    seeing intent signals with capped identified-visitor volume and limited
-    seats/credits.
+  price: 0
+  currency: USD
+  billingPeriod: month
+  description: 'Free self-serve tier. Tagline: "Find your first customers."'
   entries:
-  - label: Identified Visitors
-    name: identified_visitors
+  - label: Included Seats
+    name: seats
     type: quota
-    metric: visitors
-    limit: -1
+    metric: seats
+    limit: 2
     timeFrame: month
     geo: global
     unit: 1
-    price: included (capped)
+    price: included
     userMultiplied: false
-  - label: Enrichment Credits
-    name: enrichment_credits
+  - label: Credits
+    name: credits
     type: quota
     metric: credits
-    limit: -1
+    limit: 100
     timeFrame: month
     geo: global
     unit: 1
-    price: included (limited)
+    price: included
+    userMultiplied: false
+  - label: Data Retention
+    name: data_retention
+    type: limit
+    metric: months
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
     userMultiplied: false
   elements:
-  - name: Website Pixel
-  - name: Visitor & Company Identification
-  - name: Intent Signals
+  - name: All features
+  - name: Company deanonymization + auto-prospecting
+  - name: Intent scoring
   - name: Slack Alerts
-- id: koala-pro
-  name: Pro
+  - name: Support via Docs only
+- id: koala-starter
+  name: Starter
   type: subscription
-  description: >-
-    Paid tier that raises identified-visitor volume and enrichment credits and
-    unlocks automations, audiences, additional integrations, and more seats.
-    Entry paid pricing is reported in the low hundreds of dollars per month.
+  price: 200
+  currency: USD
+  billingPeriod: month
+  description: 'Entry paid tier. Tagline: "Automate early sales plays."'
   entries:
   - label: Monthly Subscription
-    name: pro_subscription
+    name: starter_subscription
     type: flat
     metric: subscription
     limit: -1
     timeFrame: month
     geo: global
     unit: 1
-    price: from ~$199/month (see pricing page)
+    price: '200'
+    userMultiplied: false
+  - label: Included Seats
+    name: seats
+    type: quota
+    metric: seats
+    limit: 2
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included (additional seats available for purchase)
+    userMultiplied: false
+  - label: Credits
+    name: credits
+    type: quota
+    metric: credits
+    limit: 1000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  - label: Data Retention
+    name: data_retention
+    type: limit
+    metric: months
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
     userMultiplied: false
   elements:
-  - name: Higher Identified Visitor Limits
-  - name: More Enrichment Credits
-  - name: Auto-Outbound & Automations
-  - name: Audiences
-  - name: CRM & Reverse ETL Integrations
-- id: koala-enterprise
-  name: Enterprise
+  - name: Everything on Free
+  - name: Lead routing — Round Robin, Specific people
+  - name: Email support
+- id: koala-growth
+  name: Growth
+  type: subscription
+  price: 1000
+  currency: USD
+  billingPeriod: month
+  popular: true
+  trial: 14-day free trial
+  description: 'Most-popular tier. Tagline: "Workflows for scaling sales teams."'
+  entries:
+  - label: Monthly Subscription
+    name: growth_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: '1000'
+    userMultiplied: false
+  - label: Included Seats
+    name: seats
+    type: quota
+    metric: seats
+    limit: 3
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included (additional seats available for purchase)
+    userMultiplied: false
+  - label: Credits
+    name: credits
+    type: quota
+    metric: credits
+    limit: 5000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  - label: Data Retention
+    name: data_retention
+    type: limit
+    metric: months
+    limit: 3
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: Everything on Starter
+  - name: Lead routing — CRM Owner, Round Robin, Specific people
+  - name: 1 CRM integration (HubSpot/Salesforce)
+  - name: Email support
+- id: koala-business
+  name: Business
   type: enterprise
-  description: >-
-    Custom volume, SSO/SAML, advanced intent signals, security review,
-    dedicated support, and negotiated terms. Contact Koala sales.
+  price: custom
+  currency: USD
+  billingPeriod: custom
+  description: 'Enterprise tier. Tagline: "Advanced customization & support." Contact
+    us for pricing.'
   entries:
   - label: Enterprise Agreement
-    name: enterprise
+    name: business_contract
     type: flat
     metric: contract
     limit: -1
@@ -107,11 +206,35 @@ plans:
     unit: 1
     price: contact sales
     userMultiplied: false
+  - label: Included Seats
+    name: seats
+    type: quota
+    metric: seats
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: custom
+    userMultiplied: false
+  - label: Credits
+    name: credits
+    type: quota
+    metric: credits
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: custom
+    userMultiplied: false
   elements:
-  - name: SAML SSO
-  - name: Advanced Intent Signals
-  - name: Custom Volume & Credits
-  - name: Priority Support
+  - name: Everything on Growth
+  - name: Territory + CRM Owner (including custom owner fields) lead routing
+  - name: Multiple CRMs
+  - name: Custom objects/fields + advanced integrations
+  - name: SSO + Approved Logins (SAML via Okta)
+  - name: ICP Scoring
+  - name: Custom data retention
+  - name: CSM + dedicated Slack channel
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

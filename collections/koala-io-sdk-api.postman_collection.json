@@ -1,0 +1,161 @@
+{
+  "item": [
+    {
+      "id": "acbde520-daa8-4ebf-87b7-b98188714463",
+      "name": "SDK",
+      "description": {
+        "content": "Bootstrap configuration used by the client-side pixel.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "c9b9e823-6db0-4bd5-8cf2-8bb2dab0a02e",
+          "name": "Get SDK bootstrap configuration",
+          "request": {
+            "name": "Get SDK bootstrap configuration",
+            "description": {
+              "content": "Returns the JSON configuration the browser pixel needs to initialize for this workspace. Also useful to verify that a public key or a custom reverse-proxy install resolves correctly (a valid key returns a JSON response).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "web",
+                "projects",
+                ":publicApiKey"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "publicApiKey",
+                  "description": "(Required) The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ed092f0a-02a4-491b-8941-9b7cef991348",
+              "name": "Bootstrap configuration returned.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "web",
+                    "projects",
+                    ":publicApiKey"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "publicApiKey",
+                      "description": "(Required) The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": true,\n  \"key_1\": 564.6215077198835,\n  \"key_2\": true\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5d933523-a670-4cba-a844-2f0fa68ea61e",
+              "name": "Unknown or disabled project key.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "web",
+                    "projects",
+                    ":publicApiKey"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "publicApiKey",
+                      "description": "(Required) The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL."
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api2.getkoala.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "dd6afeaa-1e7d-4999-8af3-188da0d6334c",
+    "name": "Koala Accounts SDK API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Koala's developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:\n\n1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.\n\n2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.\n\nVisitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.\n\nContact Support:\n Name: Koala Support\n Email: support@getkoala.com",
+      "type": "text/plain"
+    }
+  }
+}
