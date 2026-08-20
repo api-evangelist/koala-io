@@ -27,6 +27,14 @@ tags:
 - Visitor Identification
 - De-anonymization
 - Enrichment
+- Go-To-Market
+- Sales Intelligence
+- B2B
+tags_raw:
+- Buyer Intent
+- Visitor Identification
+- De-anonymization
+- Enrichment
 - Go-to-Market
 - Sales Intelligence
 - B2B
@@ -37,6 +45,11 @@ apis:
 - aid: koala-io:koala-io-web-pixel-sdk
   name: Koala Web Pixel (JavaScript SDK)
   tags:
+  - Pixel
+  - JavaScript
+  - Autotracking
+  - Client-Side
+  tags_raw:
   - Pixel
   - JavaScript
   - Autotracking
@@ -63,6 +76,8 @@ apis:
   humanURL: https://getkoala.com/docs/developer-guides/server-side
   baseURL: https://api2.getkoala.com/web/projects/{public_api_key}
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
