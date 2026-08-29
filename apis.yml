@@ -8,6 +8,18 @@ description: Koala is a B2B buyer-intent and go-to-market platform that de-anony
   on the accounts showing the strongest signals. Its developer surface is a client-side JavaScript pixel
   plus an HTTP collection API for server-side identify, event, and account ingestion, with a separate
   secret-key admin API for GDPR deletion.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
