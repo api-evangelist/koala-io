@@ -7,6 +7,11 @@ deployment:
   endpoint: https://koala.mintlify.app/mcp
   auth: none
   verified: probed
+  probe_prior: (never probed)
+  probe: live
+  probe_why: live
+  checked: '2026-09-11'
+  source: claimed-backlog re-probe 2026-09-11
 server:
   name: koala-docs
   transport: http
@@ -14,15 +19,13 @@ server:
   url: https://koala.mintlify.app/mcp
   scope: documentation
   vendor: Mintlify
-  vendor_note: >-
-    This is the Mintlify-generated documentation MCP server for Koala's own docs
-    project (the origin behind https://getkoala.com/docs). It exposes Koala's
-    documentation to agents; it does NOT expose the Koala Collection, Accounts or
-    Deletion APIs. Koala publishes no MCP server for its data-plane APIs.
-  canonical_path_note: >-
-    https://getkoala.com/docs/mcp is the customer-domain path for the same server but
-    returned HTTP 429 / Cloudflare error 1027 on 2026-08-13 during the product
-    wind-down; the .mintlify.app origin answered normally.
+  vendor_note: This is the Mintlify-generated documentation MCP server for Koala's own docs project (the
+    origin behind https://getkoala.com/docs). It exposes Koala's documentation to agents; it does NOT
+    expose the Koala Collection, Accounts or Deletion APIs. Koala publishes no MCP server for its data-plane
+    APIs.
+  canonical_path_note: https://getkoala.com/docs/mcp is the customer-domain path for the same server but
+    returned HTTP 429 / Cloudflare error 1027 on 2026-08-13 during the product wind-down; the .mintlify.app
+    origin answered normally.
 probe:
   request: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
   http_status: 200
@@ -33,9 +36,8 @@ probe:
 tools:
 - name: search_koala
   title: Search documentation
-  description: >-
-    Search across the Koala knowledge base to find relevant information, code
-    examples, API references, and guides.
+  description: Search across the Koala knowledge base to find relevant information, code examples, API
+    references, and guides.
   input_schema:
     query: string (required) — Search query
   annotations:
@@ -46,10 +48,9 @@ tools:
   source_operation: null
 - name: query_docs_filesystem_koala
   title: null
-  description: >-
-    Run a read-only shell-like query (rg/grep/find/tree/ls/cat/head/tail/jq and
-    friends) against a virtualized in-memory filesystem containing only the Koala
-    documentation pages. Stateless per call; no network, no writes.
+  description: Run a read-only shell-like query (rg/grep/find/tree/ls/cat/head/tail/jq and friends) against
+    a virtualized in-memory filesystem containing only the Koala documentation pages. Stateless per call;
+    no network, no writes.
   input_schema:
     command: string (required) — the read-only shell-like command to run
   annotations:
@@ -73,10 +74,8 @@ tools:
 coverage:
   tools_total: 3
   tools_bound_to_rest: 0
-  note: >-
-    Every tool is a documentation tool. None maps to a Koala REST operation, so the
-    crosswalk records all three as mcp_only and all six OpenAPI operations as
-    rest_only. See mcp/koala-io-tool-crosswalk.yml.
+  note: Every tool is a documentation tool. None maps to a Koala REST operation, so the crosswalk records
+    all three as mcp_only and all six OpenAPI operations as rest_only. See mcp/koala-io-tool-crosswalk.yml.
 x-evidence:
   fetched: '2026-08-13'
   url: https://koala.mintlify.app/mcp
