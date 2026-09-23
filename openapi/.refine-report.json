@@ -1,20 +1,32 @@
 {
   "provider": "koala-io",
   "sources": [
-    "koala-io-accounts-api-openapi.yml",
-    "koala-io-collection-api-openapi.yml",
-    "koala-io-deletion-api-openapi.yml",
-    "koala-io-sdk-api-openapi.yml"
+    "_original/koala-io-openapi.yml",
+    "_original/koala-io-server-side-api-openapi.yml"
   ],
   "outputs": [
     "koala-io-accounts-api-openapi.yml",
     "koala-io-collection-api-openapi.yml",
     "koala-io-deletion-api-openapi.yml",
-    "koala-io-sdk-api-openapi.yml"
+    "koala-io-sdk-api-openapi.yml",
+    "koala-io-account-ingestion-api-openapi.yml",
+    "koala-io-profile-ingestion-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "koala-io-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "koala-io-server-side-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "koala-io-account-ingestion-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "koala-io-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "koala-io-collection-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "koala-io-deletion-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "koala-io-profile-ingestion-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "koala-io-sdk-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

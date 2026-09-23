@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: Koala Server-Side Account Ingestion API
-  description: 'RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala''s intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.
-
-    '
+  description: RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala's intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.
   version: 1.0.0
   contact:
     name: Koala Developer Docs
@@ -24,9 +22,7 @@ paths:
     post:
       operationId: sendAccountBatch
       summary: Send account-level batch events and traits
-      description: 'Ingests a batch of identify calls (traits) and/or events associated with a company account rather than an individual visitor. Each request must include either an `account_id` or `domain`. Koala will create a new Account automatically if the domain has not been tracked before. Use the optional `group_id` inside each identify to disambiguate multiple tenants sharing the same domain.
-
-        '
+      description: Ingests a batch of identify calls (traits) and/or events associated with a company account rather than an individual visitor. Each request must include either an `account_id` or `domain`. Koala will create a new Account automatically if the domain has not been tracked before. Use the optional `group_id` inside each identify to disambiguate multiple tenants sharing the same domain.
       tags:
       - Account Ingestion
       parameters:
@@ -108,77 +104,6 @@ paths:
       security: []
 components:
   schemas:
-    BatchResponse:
-      type: object
-      description: Successful batch acceptance response.
-      properties:
-        ok:
-          type: boolean
-          description: Indicates the batch was accepted.
-          example: true
-    AccountBatchRequest:
-      type: object
-      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
-
-        '
-      properties:
-        account_id:
-          type: string
-          description: Koala internal account identifier.
-          example: acct_abc123
-        domain:
-          type: string
-          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
-
-            '
-          example: getkoala.com
-        identifies:
-          type: array
-          description: Account-level identify calls carrying trait data.
-          items:
-            $ref: '#/components/schemas/AccountIdentifyCall'
-        events:
-          type: array
-          description: Account-level track events.
-          items:
-            $ref: '#/components/schemas/TrackEvent'
-      anyOf:
-      - required:
-        - account_id
-      - required:
-        - domain
-    AccountIdentifyCall:
-      type: object
-      description: An identify call carrying account-level traits.
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - identify
-          description: Must be "identify".
-        sent_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the identify was generated.
-        traits:
-          type: object
-          description: Arbitrary key-value traits to associate with the account.
-          additionalProperties: true
-          properties:
-            group_id:
-              type: string
-              description: 'Optional tenant disambiguator for companies with multiple groups.
-
-                '
-              example: development-team
-            billing_plan:
-              type: string
-            vip:
-              type: boolean
-            headcount:
-              type: integer
     ErrorResponse:
       type: object
       description: Error response body.
@@ -220,6 +145,77 @@ components:
           format: date-time
           description: ISO 8601 timestamp when the event was generated.
           example: '2022-11-09T23:57:14.776Z'
+    AccountIdentifyCall:
+      type: object
+      description: An identify call carrying account-level traits.
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          description: Must be "identify".
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the identify was generated.
+        traits:
+          type: object
+          description: Arbitrary key-value traits to associate with the account.
+          additionalProperties: true
+          properties:
+            group_id:
+              type: string
+              description: 'Optional tenant disambiguator for companies with multiple groups.
+
+                '
+              example: development-team
+            billing_plan:
+              type: string
+            vip:
+              type: boolean
+            headcount:
+              type: integer
+    AccountBatchRequest:
+      type: object
+      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
+
+        '
+      properties:
+        account_id:
+          type: string
+          description: Koala internal account identifier.
+          example: acct_abc123
+        domain:
+          type: string
+          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
+
+            '
+          example: getkoala.com
+        identifies:
+          type: array
+          description: Account-level identify calls carrying trait data.
+          items:
+            $ref: '#/components/schemas/AccountIdentifyCall'
+        events:
+          type: array
+          description: Account-level track events.
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+      anyOf:
+      - required:
+        - account_id
+      - required:
+        - domain
+    BatchResponse:
+      type: object
+      description: Successful batch acceptance response.
+      properties:
+        ok:
+          type: boolean
+          description: Indicates the batch was accepted.
+          example: true
 externalDocs:
   description: Koala Developer Guides
   url: https://getkoala.com/docs/developer-guides/server-side

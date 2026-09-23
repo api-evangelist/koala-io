@@ -1,16 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Koala Accounts Deletion API
-  description: 'Koala''s developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform. It has two distinct halves with two distinct auth models:
-
-
-    1. The **Collection / Batch API** on `https://api2.getkoala.com`, which ingests visitor identifies, custom events, traits, and account-level data. It is authenticated by the workspace **public (publishable) project key** embedded directly in the URL path (`/web/projects/{public_api_key}/...`). There is no bearer token; the key is not secret and the same key powers the browser pixel. A `GET` on the project root returns the JSON bootstrap config the client-side SDK uses to initialize.
-
-
-    2. The **Deletion (GDPR) API** on `https://app.getkoala.com/api/v1`, which is authenticated with a **secret API key** (`sk_...`) via an `Authorization: Bearer` header and is used to request and poll right-to-erasure deletions.
-
-
-    Visitor de-anonymization (IP-to-company), person enrichment, and company firmographic enrichment are performed by Koala internally (powered by Clearbit Reveal/Enrich and ZoomInfo) and surfaced in the app, exports, webhooks, and reverse ETL integrations. Koala does not document a public REST endpoint to query enriched company/visitor/intent records directly; that data is consumed through the app, warehouse syncs (BigQuery, Snowflake, Hightouch, Census), and outbound automations.'
+  title: Koala Deletion API
+  description: Koala's developer-facing HTTP surface for its B2B buyer-intent and go-to-market platform.
   termsOfService: https://getkoala.com/legal/terms
   contact:
     name: Koala Support
@@ -84,12 +75,6 @@ paths:
           description: Unknown deletion request id.
 components:
   schemas:
-    DeletionRequestCreated:
-      type: object
-      properties:
-        deletion_request_id:
-          type: string
-          format: uuid
     DeletionRequestStatus:
       type: object
       properties:
@@ -132,6 +117,12 @@ components:
           items:
             type: string
             format: email
+    DeletionRequestCreated:
+      type: object
+      properties:
+        deletion_request_id:
+          type: string
+          format: uuid
   securitySchemes:
     SecretApiKey:
       type: http

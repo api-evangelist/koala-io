@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Koala Server-Side Account Ingestion Profile Ingestion API
-  description: 'RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala''s intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.
-
-    '
+  title: Koala Server-Side Profile Ingestion API
+  description: RESTful server-side API for sending batched events, visitor identifications, and account traits to Koala's intent data platform. Supports profile-level and account-level batch ingestion for use in backend services, data pipelines, and edge compute environments where the JavaScript snippet cannot run.
   version: 1.0.0
   contact:
     name: Koala Developer Docs
@@ -24,9 +22,7 @@ paths:
     post:
       operationId: sendProfileBatch
       summary: Send profile-level batch events, identifies, and page views
-      description: 'Ingests a batch of events, identify calls, and/or page views tied to a single profile (visitor). Each request must include either a `profile_id` (UUID v4 read from the `ko_id` cookie) or an `email`. A maximum of 30 entries each of events, identifies, and page_views per request is enforced. All entries in a single request must belong to the same person.
-
-        '
+      description: Ingests a batch of events, identify calls, and/or page views tied to a single profile (visitor). Each request must include either a `profile_id` (UUID v4 read from the `ko_id` cookie) or an `email`. A maximum of 30 entries each of events, identifies, and page_views per request is enforced. All entries in a single request must belong to the same person.
       tags:
       - Profile Ingestion
       parameters:
@@ -100,39 +96,36 @@ paths:
       security: []
 components:
   schemas:
-    BatchResponse:
+    IdentifyCall:
       type: object
-      description: Successful batch acceptance response.
-      properties:
-        ok:
-          type: boolean
-          description: Indicates the batch was accepted.
-          example: true
-    PageView:
-      type: object
-      description: A page view event in the Segment-compatible format.
+      description: An identify call carrying visitor-level traits.
       required:
       - type
       properties:
-        message_id:
-          type: string
-          description: Optional idempotency key.
         type:
           type: string
           enum:
-          - page
-          description: Must be "page".
-        name:
-          type: string
-          description: Human-readable page name.
-        properties:
-          type: object
-          description: Arbitrary properties including url, referrer, title, etc.
-          additionalProperties: true
+          - identify
+          description: Must be "identify".
         sent_at:
           type: string
           format: date-time
-          description: ISO 8601 timestamp when the page view was captured.
+          description: ISO 8601 timestamp when the identify was generated.
+          example: '2023-11-30T02:51:36.840Z'
+        traits:
+          type: object
+          description: Arbitrary key-value traits to associate with the visitor.
+          additionalProperties: true
+          properties:
+            email:
+              type: string
+              format: email
+            billing_plan:
+              type: string
+            vip:
+              type: boolean
+            is_current_customer:
+              type: boolean
     ProfileBatchRequest:
       type: object
       description: 'Payload for the profile /batch endpoint. Must include at least one of `profile_id` or `email`. Optionally includes up to 30 each of `events`, `identifies`, and `page_views`.
@@ -174,36 +167,6 @@ components:
         - profile_id
       - required:
         - email
-    IdentifyCall:
-      type: object
-      description: An identify call carrying visitor-level traits.
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - identify
-          description: Must be "identify".
-        sent_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the identify was generated.
-          example: '2023-11-30T02:51:36.840Z'
-        traits:
-          type: object
-          description: Arbitrary key-value traits to associate with the visitor.
-          additionalProperties: true
-          properties:
-            email:
-              type: string
-              format: email
-            billing_plan:
-              type: string
-            vip:
-              type: boolean
-            is_current_customer:
-              type: boolean
     ErrorResponse:
       type: object
       description: Error response body.
@@ -245,6 +208,39 @@ components:
           format: date-time
           description: ISO 8601 timestamp when the event was generated.
           example: '2022-11-09T23:57:14.776Z'
+    PageView:
+      type: object
+      description: A page view event in the Segment-compatible format.
+      required:
+      - type
+      properties:
+        message_id:
+          type: string
+          description: Optional idempotency key.
+        type:
+          type: string
+          enum:
+          - page
+          description: Must be "page".
+        name:
+          type: string
+          description: Human-readable page name.
+        properties:
+          type: object
+          description: Arbitrary properties including url, referrer, title, etc.
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the page view was captured.
+    BatchResponse:
+      type: object
+      description: Successful batch acceptance response.
+      properties:
+        ok:
+          type: boolean
+          description: Indicates the batch was accepted.
+          example: true
 externalDocs:
   description: Koala Developer Guides
   url: https://getkoala.com/docs/developer-guides/server-side
