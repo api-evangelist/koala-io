@@ -104,16 +104,6 @@ paths:
       security: []
 components:
   schemas:
-    ErrorResponse:
-      type: object
-      description: Error response body.
-      properties:
-        error:
-          type: string
-          description: Human-readable error message.
-        code:
-          type: string
-          description: Machine-readable error code.
     TrackEvent:
       type: object
       description: A custom track event in the Segment-compatible format.
@@ -145,6 +135,37 @@ components:
           format: date-time
           description: ISO 8601 timestamp when the event was generated.
           example: '2022-11-09T23:57:14.776Z'
+    AccountBatchRequest:
+      type: object
+      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
+
+        '
+      properties:
+        account_id:
+          type: string
+          description: Koala internal account identifier.
+          example: acct_abc123
+        domain:
+          type: string
+          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
+
+            '
+          example: getkoala.com
+        identifies:
+          type: array
+          description: Account-level identify calls carrying trait data.
+          items:
+            $ref: '#/components/schemas/AccountIdentifyCall'
+        events:
+          type: array
+          description: Account-level track events.
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+      anyOf:
+      - required:
+        - account_id
+      - required:
+        - domain
     AccountIdentifyCall:
       type: object
       description: An identify call carrying account-level traits.
@@ -177,37 +198,16 @@ components:
               type: boolean
             headcount:
               type: integer
-    AccountBatchRequest:
+    ErrorResponse:
       type: object
-      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
-
-        '
+      description: Error response body.
       properties:
-        account_id:
+        error:
           type: string
-          description: Koala internal account identifier.
-          example: acct_abc123
-        domain:
+          description: Human-readable error message.
+        code:
           type: string
-          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
-
-            '
-          example: getkoala.com
-        identifies:
-          type: array
-          description: Account-level identify calls carrying trait data.
-          items:
-            $ref: '#/components/schemas/AccountIdentifyCall'
-        events:
-          type: array
-          description: Account-level track events.
-          items:
-            $ref: '#/components/schemas/TrackEvent'
-      anyOf:
-      - required:
-        - account_id
-      - required:
-        - domain
+          description: Machine-readable error code.
     BatchResponse:
       type: object
       description: Successful batch acceptance response.

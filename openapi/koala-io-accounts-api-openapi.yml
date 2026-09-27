@@ -67,6 +67,10 @@ paths:
           description: Missing domain/account_id or malformed payload.
 components:
   schemas:
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
     IdentifyCall:
       type: object
       properties:
@@ -106,10 +110,6 @@ components:
           format: date-time
       required:
       - event
-    CollectionAck:
-      type: object
-      description: Acknowledgement that the batch was accepted.
-      additionalProperties: true
     AccountBatchRequest:
       type: object
       description: An account-scoped batch. At least one of domain or account_id is required; domain is recommended.

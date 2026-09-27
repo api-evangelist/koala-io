@@ -75,6 +75,23 @@ paths:
           description: Unknown deletion request id.
 components:
   schemas:
+    DeletionRequestCreated:
+      type: object
+      properties:
+        deletion_request_id:
+          type: string
+          format: uuid
+    DeletionRequest:
+      type: object
+      required:
+      - emails
+      properties:
+        emails:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: email
     DeletionRequestStatus:
       type: object
       properties:
@@ -106,23 +123,6 @@ components:
           type: array
           items:
             type: string
-    DeletionRequest:
-      type: object
-      required:
-      - emails
-      properties:
-        emails:
-          type: array
-          maxItems: 50
-          items:
-            type: string
-            format: email
-    DeletionRequestCreated:
-      type: object
-      properties:
-        deletion_request_id:
-          type: string
-          format: uuid
   securitySchemes:
     SecretApiKey:
       type: http

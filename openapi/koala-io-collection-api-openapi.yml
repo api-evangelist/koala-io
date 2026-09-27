@@ -73,6 +73,10 @@ paths:
           description: Missing profile_id/email or malformed payload.
 components:
   schemas:
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
     IdentifyCall:
       type: object
       properties:
@@ -90,6 +94,28 @@ components:
           additionalProperties: true
       required:
       - traits
+    TrackEvent:
+      type: object
+      properties:
+        message_id:
+          type: string
+          description: Idempotency key used to dedupe replayed/retried events.
+        type:
+          type: string
+          enum:
+          - track
+          default: track
+        event:
+          type: string
+          description: Event name (e.g. "Created Account").
+        properties:
+          type: object
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+      required:
+      - event
     BatchRequest:
       type: object
       description: A visitor-scoped batch. At least one of profile_id or email is required at the top level.
@@ -123,32 +149,6 @@ components:
         - profile_id
       - required:
         - email
-    TrackEvent:
-      type: object
-      properties:
-        message_id:
-          type: string
-          description: Idempotency key used to dedupe replayed/retried events.
-        type:
-          type: string
-          enum:
-          - track
-          default: track
-        event:
-          type: string
-          description: Event name (e.g. "Created Account").
-        properties:
-          type: object
-          additionalProperties: true
-        sent_at:
-          type: string
-          format: date-time
-      required:
-      - event
-    CollectionAck:
-      type: object
-      description: Acknowledgement that the batch was accepted.
-      additionalProperties: true
   parameters:
     UserAgent:
       name: User-Agent
