@@ -135,37 +135,6 @@ components:
           format: date-time
           description: ISO 8601 timestamp when the event was generated.
           example: '2022-11-09T23:57:14.776Z'
-    AccountBatchRequest:
-      type: object
-      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
-
-        '
-      properties:
-        account_id:
-          type: string
-          description: Koala internal account identifier.
-          example: acct_abc123
-        domain:
-          type: string
-          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
-
-            '
-          example: getkoala.com
-        identifies:
-          type: array
-          description: Account-level identify calls carrying trait data.
-          items:
-            $ref: '#/components/schemas/AccountIdentifyCall'
-        events:
-          type: array
-          description: Account-level track events.
-          items:
-            $ref: '#/components/schemas/TrackEvent'
-      anyOf:
-      - required:
-        - account_id
-      - required:
-        - domain
     AccountIdentifyCall:
       type: object
       description: An identify call carrying account-level traits.
@@ -198,6 +167,37 @@ components:
               type: boolean
             headcount:
               type: integer
+    AccountBatchRequest:
+      type: object
+      description: 'Payload for the account /accounts/batch endpoint. Must include at least one of `account_id` or `domain`. Optionally includes `identifies` and `events` associated with the account.
+
+        '
+      properties:
+        account_id:
+          type: string
+          description: Koala internal account identifier.
+          example: acct_abc123
+        domain:
+          type: string
+          description: 'The company domain (e.g. "example.com") used to identify or create the account. Koala creates a new Account if this domain is not yet tracked.
+
+            '
+          example: getkoala.com
+        identifies:
+          type: array
+          description: Account-level identify calls carrying trait data.
+          items:
+            $ref: '#/components/schemas/AccountIdentifyCall'
+        events:
+          type: array
+          description: Account-level track events.
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+      anyOf:
+      - required:
+        - account_id
+      - required:
+        - domain
     ErrorResponse:
       type: object
       description: Error response body.

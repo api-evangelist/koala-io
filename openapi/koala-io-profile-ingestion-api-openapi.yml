@@ -96,102 +96,6 @@ paths:
       security: []
 components:
   schemas:
-    IdentifyCall:
-      type: object
-      description: An identify call carrying visitor-level traits.
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - identify
-          description: Must be "identify".
-        sent_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the identify was generated.
-          example: '2023-11-30T02:51:36.840Z'
-        traits:
-          type: object
-          description: Arbitrary key-value traits to associate with the visitor.
-          additionalProperties: true
-          properties:
-            email:
-              type: string
-              format: email
-            billing_plan:
-              type: string
-            vip:
-              type: boolean
-            is_current_customer:
-              type: boolean
-    TrackEvent:
-      type: object
-      description: A custom track event in the Segment-compatible format.
-      required:
-      - type
-      - event
-      properties:
-        message_id:
-          type: string
-          description: 'Optional idempotency key. If omitted, the event may be captured more than once on retry. Use a UUID or other unique string.
-
-            '
-          example: abc123-unique-id
-        type:
-          type: string
-          enum:
-          - track
-          description: Must be "track".
-        event:
-          type: string
-          description: Human-readable event name.
-          example: Created Account
-        properties:
-          type: object
-          description: Arbitrary key-value properties associated with the event.
-          additionalProperties: true
-        sent_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the event was generated.
-          example: '2022-11-09T23:57:14.776Z'
-    PageView:
-      type: object
-      description: A page view event in the Segment-compatible format.
-      required:
-      - type
-      properties:
-        message_id:
-          type: string
-          description: Optional idempotency key.
-        type:
-          type: string
-          enum:
-          - page
-          description: Must be "page".
-        name:
-          type: string
-          description: Human-readable page name.
-        properties:
-          type: object
-          description: Arbitrary properties including url, referrer, title, etc.
-          additionalProperties: true
-        sent_at:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the page view was captured.
-    ErrorResponse:
-      type: object
-      description: Error response body.
-      properties:
-        error:
-          type: string
-          description: Human-readable error message.
-        code:
-          type: string
-          description: Machine-readable error code.
     ProfileBatchRequest:
       type: object
       description: 'Payload for the profile /batch endpoint. Must include at least one of `profile_id` or `email`. Optionally includes up to 30 each of `events`, `identifies`, and `page_views`.
@@ -233,6 +137,102 @@ components:
         - profile_id
       - required:
         - email
+    TrackEvent:
+      type: object
+      description: A custom track event in the Segment-compatible format.
+      required:
+      - type
+      - event
+      properties:
+        message_id:
+          type: string
+          description: 'Optional idempotency key. If omitted, the event may be captured more than once on retry. Use a UUID or other unique string.
+
+            '
+          example: abc123-unique-id
+        type:
+          type: string
+          enum:
+          - track
+          description: Must be "track".
+        event:
+          type: string
+          description: Human-readable event name.
+          example: Created Account
+        properties:
+          type: object
+          description: Arbitrary key-value properties associated with the event.
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the event was generated.
+          example: '2022-11-09T23:57:14.776Z'
+    IdentifyCall:
+      type: object
+      description: An identify call carrying visitor-level traits.
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          description: Must be "identify".
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the identify was generated.
+          example: '2023-11-30T02:51:36.840Z'
+        traits:
+          type: object
+          description: Arbitrary key-value traits to associate with the visitor.
+          additionalProperties: true
+          properties:
+            email:
+              type: string
+              format: email
+            billing_plan:
+              type: string
+            vip:
+              type: boolean
+            is_current_customer:
+              type: boolean
+    PageView:
+      type: object
+      description: A page view event in the Segment-compatible format.
+      required:
+      - type
+      properties:
+        message_id:
+          type: string
+          description: Optional idempotency key.
+        type:
+          type: string
+          enum:
+          - page
+          description: Must be "page".
+        name:
+          type: string
+          description: Human-readable page name.
+        properties:
+          type: object
+          description: Arbitrary properties including url, referrer, title, etc.
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the page view was captured.
+    ErrorResponse:
+      type: object
+      description: Error response body.
+      properties:
+        error:
+          type: string
+          description: Human-readable error message.
+        code:
+          type: string
+          description: Machine-readable error code.
     BatchResponse:
       type: object
       description: Successful batch acceptance response.

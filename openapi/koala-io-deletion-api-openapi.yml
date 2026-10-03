@@ -75,12 +75,6 @@ paths:
           description: Unknown deletion request id.
 components:
   schemas:
-    DeletionRequestCreated:
-      type: object
-      properties:
-        deletion_request_id:
-          type: string
-          format: uuid
     DeletionRequest:
       type: object
       required:
@@ -123,6 +117,12 @@ components:
           type: array
           items:
             type: string
+    DeletionRequestCreated:
+      type: object
+      properties:
+        deletion_request_id:
+          type: string
+          format: uuid
   securitySchemes:
     SecretApiKey:
       type: http

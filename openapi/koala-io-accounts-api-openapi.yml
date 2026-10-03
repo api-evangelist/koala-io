@@ -67,27 +67,6 @@ paths:
           description: Missing domain/account_id or malformed payload.
 components:
   schemas:
-    CollectionAck:
-      type: object
-      description: Acknowledgement that the batch was accepted.
-      additionalProperties: true
-    IdentifyCall:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - identify
-          default: identify
-        sent_at:
-          type: string
-          format: date-time
-        traits:
-          type: object
-          description: Arbitrary visitor or account traits (email, billing_plan, vip, headcount, group_id, etc.).
-          additionalProperties: true
-      required:
-      - traits
     TrackEvent:
       type: object
       properties:
@@ -110,6 +89,23 @@ components:
           format: date-time
       required:
       - event
+    IdentifyCall:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - identify
+          default: identify
+        sent_at:
+          type: string
+          format: date-time
+        traits:
+          type: object
+          description: Arbitrary visitor or account traits (email, billing_plan, vip, headcount, group_id, etc.).
+          additionalProperties: true
+      required:
+      - traits
     AccountBatchRequest:
       type: object
       description: An account-scoped batch. At least one of domain or account_id is required; domain is recommended.
@@ -138,15 +134,11 @@ components:
         - domain
       - required:
         - account_id
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
   parameters:
-    UserAgent:
-      name: User-Agent
-      in: header
-      required: true
-      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
-      schema:
-        type: string
-        example: your-company-name/1.0.0
     PublicApiKey:
       name: publicApiKey
       in: path
@@ -155,6 +147,14 @@ components:
       schema:
         type: string
         example: my-public-api-key
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
   securitySchemes:
     SecretApiKey:
       type: http
