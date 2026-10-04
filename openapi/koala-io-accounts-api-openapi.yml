@@ -66,7 +66,56 @@ paths:
         '400':
           description: Missing domain/account_id or malformed payload.
 components:
+  parameters:
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
   schemas:
+    CollectionAck:
+      type: object
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
+    AccountBatchRequest:
+      type: object
+      description: An account-scoped batch. At least one of domain or account_id is required; domain is recommended.
+      properties:
+        domain:
+          type: string
+          description: Company domain used as the account key (e.g. getkoala.com).
+        account_id:
+          type: string
+          description: Koala account id, if you already have one.
+        group_id:
+          type: string
+          description: Optional grouping key to disambiguate multiple tenants mapping to the same domain.
+        events:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/TrackEvent'
+        identifies:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/IdentifyCall'
+      anyOf:
+      - required:
+        - domain
+      - required:
+        - account_id
     TrackEvent:
       type: object
       properties:
@@ -106,55 +155,6 @@ components:
           additionalProperties: true
       required:
       - traits
-    AccountBatchRequest:
-      type: object
-      description: An account-scoped batch. At least one of domain or account_id is required; domain is recommended.
-      properties:
-        domain:
-          type: string
-          description: Company domain used as the account key (e.g. getkoala.com).
-        account_id:
-          type: string
-          description: Koala account id, if you already have one.
-        group_id:
-          type: string
-          description: Optional grouping key to disambiguate multiple tenants mapping to the same domain.
-        events:
-          type: array
-          maxItems: 30
-          items:
-            $ref: '#/components/schemas/TrackEvent'
-        identifies:
-          type: array
-          maxItems: 30
-          items:
-            $ref: '#/components/schemas/IdentifyCall'
-      anyOf:
-      - required:
-        - domain
-      - required:
-        - account_id
-    CollectionAck:
-      type: object
-      description: Acknowledgement that the batch was accepted.
-      additionalProperties: true
-  parameters:
-    PublicApiKey:
-      name: publicApiKey
-      in: path
-      required: true
-      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
-      schema:
-        type: string
-        example: my-public-api-key
-    UserAgent:
-      name: User-Agent
-      in: header
-      required: true
-      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
-      schema:
-        type: string
-        example: your-company-name/1.0.0
   securitySchemes:
     SecretApiKey:
       type: http

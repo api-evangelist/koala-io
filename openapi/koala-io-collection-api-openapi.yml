@@ -72,29 +72,28 @@ paths:
         '400':
           description: Missing profile_id/email or malformed payload.
 components:
+  parameters:
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
   schemas:
-    TrackEvent:
+    CollectionAck:
       type: object
-      properties:
-        message_id:
-          type: string
-          description: Idempotency key used to dedupe replayed/retried events.
-        type:
-          type: string
-          enum:
-          - track
-          default: track
-        event:
-          type: string
-          description: Event name (e.g. "Created Account").
-        properties:
-          type: object
-          additionalProperties: true
-        sent_at:
-          type: string
-          format: date-time
-      required:
-      - event
+      description: Acknowledgement that the batch was accepted.
+      additionalProperties: true
     BatchRequest:
       type: object
       description: A visitor-scoped batch. At least one of profile_id or email is required at the top level.
@@ -145,27 +144,28 @@ components:
           additionalProperties: true
       required:
       - traits
-    CollectionAck:
+    TrackEvent:
       type: object
-      description: Acknowledgement that the batch was accepted.
-      additionalProperties: true
-  parameters:
-    PublicApiKey:
-      name: publicApiKey
-      in: path
-      required: true
-      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
-      schema:
-        type: string
-        example: my-public-api-key
-    UserAgent:
-      name: User-Agent
-      in: header
-      required: true
-      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
-      schema:
-        type: string
-        example: your-company-name/1.0.0
+      properties:
+        message_id:
+          type: string
+          description: Idempotency key used to dedupe replayed/retried events.
+        type:
+          type: string
+          enum:
+          - track
+          default: track
+        event:
+          type: string
+          description: Event name (e.g. "Created Account").
+        properties:
+          type: object
+          additionalProperties: true
+        sent_at:
+          type: string
+          format: date-time
+      required:
+      - event
   securitySchemes:
     SecretApiKey:
       type: http
