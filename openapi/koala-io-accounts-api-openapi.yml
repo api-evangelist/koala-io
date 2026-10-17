@@ -66,23 +66,6 @@ paths:
         '400':
           description: Missing domain/account_id or malformed payload.
 components:
-  parameters:
-    PublicApiKey:
-      name: publicApiKey
-      in: path
-      required: true
-      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
-      schema:
-        type: string
-        example: my-public-api-key
-    UserAgent:
-      name: User-Agent
-      in: header
-      required: true
-      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
-      schema:
-        type: string
-        example: your-company-name/1.0.0
   schemas:
     CollectionAck:
       type: object
@@ -155,6 +138,23 @@ components:
           additionalProperties: true
       required:
       - traits
+  parameters:
+    UserAgent:
+      name: User-Agent
+      in: header
+      required: true
+      description: Required. Identify your integration (e.g. `your-company-name/1.0.0`). Requests without a User-Agent may be flagged as bots and dropped.
+      schema:
+        type: string
+        example: your-company-name/1.0.0
+    PublicApiKey:
+      name: publicApiKey
+      in: path
+      required: true
+      description: The workspace public (publishable) project key. This is not a secret; the same key is embedded in the browser pixel URL.
+      schema:
+        type: string
+        example: my-public-api-key
   securitySchemes:
     SecretApiKey:
       type: http
