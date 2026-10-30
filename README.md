@@ -1,4 +1,4 @@
-# Koala (koala-io)
+# Koala
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,143 +66,194 @@
 
 Koala is a B2B buyer-intent and go-to-market platform that de-anonymizes website and product traffic, identifies the visitors and companies behind it, enriches them with firmographic and contact data (via Clearbit Reveal/Enrich and ZoomInfo), and scores first-party intent so sales teams can act on the accounts showing the strongest signals. Its developer surface is a client-side JavaScript pixel plus an HTTP collection API for server-side identify, event, and account ingestion, with a separate secret-key admin API for GDPR deletion.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/koala-io/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/koala-io/refs/heads/main/apis.yml)
+**Areas:** Buyer Intent · Visitor Identification · De-anonymization · Data Enrichment · Go-To-Market · Sales Intelligence · B2B · A2A
 
-## Tags
+## Koala on APIs.io
 
-- Buyer Intent
-- Visitor Identification
-- De-anonymization
-- Enrichment
-- Go-to-Market
-- Sales Intelligence
-- B2B
+Everything profiled for Koala is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/koala-io/](https://apis.io/providers/koala-io/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (5)
 
-- **Created:** 2026-07-01
-- **Modified:** 2026-07-01
+- [Koala Web Pixel (JavaScript SDK)](https://apis.io/apis/koala-io/koala-io-web-pixel-sdk/) — The client-side pixel loaded from cdn.getkoala.com/v1/{key}/sdk.js. Exposes ko.identify(), ko.track(), ko.qualify(), ko.reset() and autotracks pageviews,…
+- [Koala Accounts API](https://apis.io/apis/koala-io/koala-io-accounts-api/) — Account-level (company) trait and event ingestion.
+- [Koala Collection API](https://apis.io/apis/koala-io/koala-io-collection-api/) — Server-side ingestion of visitor identifies, events, and traits.
+- [Koala Deletion API](https://apis.io/apis/koala-io/koala-io-deletion-api/) — GDPR right-to-erasure requests and status.
+- [Koala SDK API](https://apis.io/apis/koala-io/koala-io-sdk-api/) — Bootstrap configuration used by the client-side pixel.
 
-## A Note on Koala's API Surface
+### Published properties
 
-Koala's documented HTTP API is an **ingestion / collection** API, not a query API. You send data *into* Koala (visitor identifies, events, traits, account data) and consume the resulting identified accounts, enrichment, and intent scores through the Koala app, Slack alerts, webhooks/automations, and warehouse/reverse-ETL integrations (BigQuery, Snowflake, Hightouch, Census). The IP-to-company de-anonymization and person/company enrichment are performed by Koala internally (Clearbit Reveal/Enrich, ZoomInfo); Koala does not publish a public REST endpoint to query enriched records directly. There are two auth models: the Collection/Accounts endpoints use the **public project key in the URL path**, while the Deletion (GDPR) endpoint uses a **secret bearer key**.
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### AsyncAPI (1)
 
-### Koala Collection (Batch) API
+Event-driven and webhook contracts.
 
-Server-side ingestion endpoint. POST visitor identifies, custom events, and traits to /batch keyed by your workspace public API key. Each request must carry a top-level profile_id or email, is capped at 30 of each payload type, and must send a User-Agent header. Authenticated by public (publishable) project key embedded in the path, not a secret bearer token.
+- [Koala Io Auto Outbound Webhooks](https://apis.io/asyncapis/koala-io/koala-io-auto-outbound-webhooks/)
 
-- **Human URL:** [https://getkoala.com/docs/developer-guides/server-side](https://getkoala.com/docs/developer-guides/server-side)
-- **Base URL:** `https://api2.getkoala.com/web/projects/{public_api_key}`
+#### MCP servers (1)
 
-#### Tags
+Model Context Protocol servers that expose the API to agents.
 
-- Ingestion
-- Identify
-- Events
-- Batch
+- [koala-docs](https://apis.io/servers/koala-io/koala-docs/)
 
-#### Properties
+#### Agentic access (1)
 
-- [Documentation](https://getkoala.com/docs/developer-guides/server-side)
-- [Documentation](https://getkoala.com/docs/developer-guides/sending-identify)
-- [OpenAPI](openapi/koala-io-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/koala-io.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/koala-io.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-### Koala Accounts API
+- [Koala Io Agentic Access](https://apis.io/agentic-access/koala-io/koala-io-agentic-access/)
 
-Account-level ingestion at /accounts/batch. Send firmographic traits and account events tied to a company domain (or account_id), with an optional group_id to disambiguate multiple tenants/workspaces mapping to the same domain. Koala auto-creates the account if the domain is new.
+#### JSON Schema (2)
 
-- **Human URL:** [https://getkoala.com/docs/developer-guides/server-side](https://getkoala.com/docs/developer-guides/server-side)
-- **Base URL:** `https://api2.getkoala.com/web/projects/{public_api_key}`
+The data models the API reads and writes.
 
-#### Tags
+- [KoalaAccountBatchRequest](https://apis.io/schemas/koala-io/koala-io-account-batch-request/)
+- [KoalaProfileBatchRequest](https://apis.io/schemas/koala-io/koala-io-profile-batch-request/)
 
-- Accounts
-- Company Traits
-- Firmographics
+#### JSON-LD (1)
 
-#### Properties
+Linked-data contexts for the provider's vocabulary.
 
-- [Documentation](https://getkoala.com/docs/developer-guides/server-side)
-- [OpenAPI](openapi/koala-io-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/koala-io.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/koala-io.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Koala Io Context](https://apis.io/jsonld/koala-io/koala-io-context/)
 
-### Koala SDK Bootstrap API
+#### Vocabulary (1)
 
-GET on the project root returns the JSON bootstrap configuration the browser pixel needs to initialize. Used to verify a public key or a custom reverse-proxy install is wired correctly.
+The provider's domain terms, defined.
 
-- **Human URL:** [https://getkoala.com/docs/sdk/installation](https://getkoala.com/docs/sdk/installation)
-- **Base URL:** `https://api2.getkoala.com/web/projects/{public_api_key}`
+- [Koala API Vocabulary](https://apis.io/vocabularies/koala-io/koala-io-vocabulary/)
 
-#### Tags
+#### Examples (4)
 
-- Pixel
-- SDK
-- Bootstrap
+Example requests and responses.
 
-#### Properties
+- [Koala Io Account Batch Event Example](https://apis.io/examples/koala-io/koala-io-account-batch-event-example/)
+- [Koala Io Account Batch Traits Example](https://apis.io/examples/koala-io/koala-io-account-batch-traits-example/)
+- [Koala Io Profile Batch Identify Example](https://apis.io/examples/koala-io/koala-io-profile-batch-identify-example/)
+- [Koala Io Profile Batch Track Example](https://apis.io/examples/koala-io/koala-io-profile-batch-track-example/)
 
-- [Documentation](https://getkoala.com/docs/sdk/installation)
-- [Documentation](https://getkoala.com/docs/get-started/quick-start)
-- [OpenAPI](openapi/koala-io-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
+#### Collections (7)
 
-### Koala Web Pixel (JavaScript SDK)
+Postman and Open Collection request collections.
 
-The client-side pixel loaded from cdn.getkoala.com/v1/{key}/sdk.js. Exposes ko.identify(), ko.track(), ko.qualify(), ko.reset() and autotracks pageviews, form fills, and session time. This is a browser SDK, not a REST resource, and it de-anonymizes traffic client-side into the same collection pipeline as the Batch API.
+- [Koala API](https://apis.io/collections/koala-io/open-koala-io/)
+- [Koala Server-Side Account Ingestion API](https://apis.io/collections/koala-io/open-koala-io-account-ingestion-api/)
+- [Koala Accounts API](https://apis.io/collections/koala-io/open-koala-io-accounts-api/)
+- [Koala Accounts Collection API](https://apis.io/collections/koala-io/open-koala-io-collection-api/)
+- [Koala Accounts Deletion API](https://apis.io/collections/koala-io/open-koala-io-deletion-api/)
+- [Koala Server-Side Account Ingestion Profile Ingestion API](https://apis.io/collections/koala-io/open-koala-io-profile-ingestion-api/)
+- [Koala Accounts SDK API](https://apis.io/collections/koala-io/open-koala-io-sdk-api/)
 
-- **Human URL:** [https://getkoala.com/docs/sdk/installation](https://getkoala.com/docs/sdk/installation)
-- **Base URL:** `https://cdn.getkoala.com/v1/{public_api_key}`
+#### Overlays (6)
 
-#### Tags
+OpenAPI overlays, including conversational phrasing for each operation.
 
-- Pixel
-- JavaScript
-- Autotracking
-- Client Side
+- [Koala Io Account Ingestion Api Overlay](https://apis.io/overlays/koala-io/koala-io-account-ingestion-api-overlay/)
+- [Koala Io Accounts Api Overlay](https://apis.io/overlays/koala-io/koala-io-accounts-api-overlay/)
+- [Koala Io Collection Api Overlay](https://apis.io/overlays/koala-io/koala-io-collection-api-overlay/)
+- [Koala Io Deletion Api Overlay](https://apis.io/overlays/koala-io/koala-io-deletion-api-overlay/)
+- [Koala Io Profile Ingestion Api Overlay](https://apis.io/overlays/koala-io/koala-io-profile-ingestion-api-overlay/)
+- [Koala Io Sdk Api Overlay](https://apis.io/overlays/koala-io/koala-io-sdk-api-overlay/)
 
-#### Properties
+#### Governance rules (1)
 
-- [Documentation](https://getkoala.com/docs/sdk/installation)
-- [Documentation](https://getkoala.com/docs/sdk/identify)
-- [Documentation](https://getkoala.com/docs/sdk/track)
-- [Documentation](https://getkoala.com/docs/sdk/autotracking)
+Spectral rulesets for the provider's contracts.
 
-### Koala Deletion (GDPR) API
+- [Koala — jsonschema rules](https://apis.io/rules/koala-io/koala-io-jsonschema-spectral-rules/)
 
-Secret-key admin API for GDPR right-to-erasure. POST a list of up to 50 emails to /deletion-requests to queue a deletion and receive a deletion_request_id; GET /deletion-requests/{id} to poll status and retrieve the deletion receipt. Authenticated with an Authorization Bearer secret (sk_...) API key, unlike the public-key collection endpoints.
+#### Security (4)
 
-- **Human URL:** [https://getkoala.com/docs/developer-guides/gdpr-endpoint](https://getkoala.com/docs/developer-guides/gdpr-endpoint)
-- **Base URL:** `https://app.getkoala.com/api/v1`
+Authentication, trust centre, and vulnerability disclosure.
 
-#### Tags
+- [Koala Io Authentication](https://apis.io/security/koala-io/koala-io-authentication/)
+- [Koala Io Domain Security](https://apis.io/security/koala-io/koala-io-domain-security/)
+- [Koala Io Trust Center](https://apis.io/security/koala-io/koala-io-trust-center/)
+- [Koala Io Vulnerability Disclosure](https://apis.io/security/koala-io/koala-io-vulnerability-disclosure/)
 
-- GDPR
-- Deletion
-- Privacy
-- Compliance
+#### Plans and pricing (1)
 
-#### Properties
+Published plans, tiers and prices.
 
-- [Documentation](https://getkoala.com/docs/developer-guides/gdpr-endpoint)
-- [OpenAPI](openapi/koala-io-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/koala-io.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/koala-io.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Koala Io Plans Pricing](https://apis.io/plans/koala-io/koala-io-plans-pricing/)
 
-## Common Properties
+#### Rate limits (1)
 
-- [GitHub Organization](https://github.com/getkoala)
-- [LinkedIn](https://www.linkedin.com/company/getkoala)
+Published request limits.
+
+- [Koala Io Rate Limits](https://apis.io/rate-limits/koala-io/koala-io-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Koala Io Finops](https://apis.io/finops/koala-io/koala-io-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://getkoala.com)
 - [Documentation](https://getkoala.com/docs)
-- [Plans](plans/koala-io-plans-pricing.yml)
-- [Rate Limits](rate-limits/koala-io-rate-limits.yml)
-- [Fin Ops](finops/koala-io-finops.yml)
+- [Getting started](https://getkoala.com/docs/get-started/quick-start)
+- [API reference](https://getkoala.com/docs/developer-guides/server-side)
+- [Pricing](https://getkoala.com/pricing)
+- [Sign up](https://app.getkoala.com/signup)
+- [Security](https://getkoala.com/security)
+- [Compliance](https://app.vanta.com/koala/trust/tzb87epi5imm1qbxktj0bn)
+- [Terms of service](https://getkoala.com/legal/terms)
+- [Privacy policy](https://getkoala.com/legal/privacy)
+- [GitHub](https://github.com/getkoala)
+- [Status](https://koala.instatus.com)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 63.4** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 65.8 |
+| Contract governance | 28.0 |
+| Operational transparency | 60.5 |
+| Developer ergonomics | 55.4 |
+| Access clarity | 77.6 |
+
+**Agent readiness 40.9** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | platform (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | documented (partial credit) |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | conformant |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 30.4** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/koala-io/](https://apis.io/providers/koala-io/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Koala: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/koala-io/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
